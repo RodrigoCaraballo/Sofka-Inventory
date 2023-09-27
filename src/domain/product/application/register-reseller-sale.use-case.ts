@@ -1,5 +1,5 @@
 import { BadRequestException, Inject } from '@nestjs/common';
-import { Observable, switchMap } from 'rxjs';
+import { Observable, of, switchMap } from 'rxjs';
 import { ValueObjectErrorHandler } from '../../../lib/sofka';
 import { IProduct, IProductRepository, ProductEntity } from '../domain';
 import { ProductTypeOrmRepository } from '../infrastructure/database/repository/product.repository';
@@ -13,7 +13,7 @@ export class RegisterResellerSaleUseCase extends ValueObjectErrorHandler {
     super();
   }
 
-  execute(data: RegisterSaleDTO): Observable<IProduct[]> {
+  execute(data: RegisterSaleDTO): Observable<RegisterSaleDTO> {
     const productsId = data.products.map((product) => product.productId);
     const dbProduct = this.productRepository.findProductsById(productsId);
 
@@ -37,7 +37,14 @@ export class RegisterResellerSaleUseCase extends ValueObjectErrorHandler {
           return newProduct;
         });
 
-        return this.productRepository.saveProducts(newProducts);
+        this.productRepository.saveProducts(newProducts);
+
+        const newData = data.products.map((product) => ({
+          ...product,
+          productPrice: product.productPrice * 0.9,
+        }));
+
+        return of({ products: newData });
       }),
     );
   }

@@ -1,5 +1,5 @@
 import { BadRequestException, Inject } from '@nestjs/common';
-import { Observable, switchMap } from 'rxjs';
+import { Observable, of, switchMap } from 'rxjs';
 import { ValueObjectErrorHandler } from '../../../lib/sofka';
 import { IProduct, IProductRepository } from '../domain';
 import { ProductEntity } from '../domain/model/product.entity';
@@ -14,7 +14,7 @@ export class RegisterFinalCustomerSaleUseCase extends ValueObjectErrorHandler {
     super();
   }
 
-  execute(data: RegisterSaleDTO): Observable<IProduct[]> {
+  execute(data: RegisterSaleDTO): Observable<RegisterSaleDTO> {
     const productsId = data.products.map((product) => product.productId);
     const dbProduct = this.productRepository.findProductsById(productsId);
 
@@ -38,7 +38,9 @@ export class RegisterFinalCustomerSaleUseCase extends ValueObjectErrorHandler {
           return newProduct;
         });
 
-        return this.productRepository.saveProducts(newProducts);
+        this.productRepository.saveProducts(newProducts);
+
+        return of(data);
       }),
     );
   }
