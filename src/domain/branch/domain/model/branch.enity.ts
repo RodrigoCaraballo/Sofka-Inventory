@@ -1,12 +1,13 @@
 import { v4 as uuidv4 } from 'uuid';
-import { UUIDValueObject } from '../../../domain/commons/domain/value-objects';
-import { IProduct } from '../../../domain/product/domain';
-import { IUser } from '../../../domain/user/domain/interfaces';
-import { IBranch } from '../domain/interfaces';
+
+import { IProduct } from '../../../../domain/product/domain';
+import { IUser } from '../../../../domain/user/domain/interfaces';
+import { UUIDValueObject } from '../../../commons/domain/value-objects';
+import { IBranch } from '../interfaces';
 import {
   BranchLocationValueObject,
   BranchNameValueObject,
-} from '../domain/value-object';
+} from '../value-object';
 
 export class BranchEntity {
   branchId: UUIDValueObject;
@@ -16,7 +17,7 @@ export class BranchEntity {
   branchEmployees: IUser[];
 
   constructor(data: IBranch) {
-    if (data.branchId) new UUIDValueObject(data.branchId);
+    if (data.branchId) this.branchId = new UUIDValueObject(data.branchId);
     else this.branchId = new UUIDValueObject(uuidv4());
 
     this.branchName = new BranchNameValueObject(data.branchName);
@@ -24,7 +25,7 @@ export class BranchEntity {
       country: data.branchCountry,
       city: data.branchCity,
     });
-    this.branchProducts = data.branchProducts;
+    this.branchProducts = this.branchProducts;
     this.branchEmployees = data.branchEmployees;
   }
 }

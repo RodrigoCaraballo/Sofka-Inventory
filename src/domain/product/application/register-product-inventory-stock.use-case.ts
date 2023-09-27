@@ -1,23 +1,15 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Observable, switchMap } from 'rxjs';
-import {
-  ValueObjectErrorHandler,
-  ValueObjectException,
-} from '../../../lib/sofka';
+import { ValueObjectErrorHandler } from '../../../lib/sofka';
+import { IProduct, IProductRepository, ProductEntity } from '../domain';
+import { ProductTypeOrmRepository } from '../infrastructure/database/repository/product.repository';
 import { RegisterProductInventoryStockDTO } from '../infrastructure/dto';
-import {
-  IProduct,
-  IProductRepository,
-  ProductInventoryStockValueObject,
-  ProductTypeOrmEntity,
-  ProductTypeOrmRepository,
-} from '../model';
 
 @Injectable()
 export class RegisterProductInventoryStockUseCase extends ValueObjectErrorHandler {
   constructor(
     @Inject(ProductTypeOrmRepository)
-    private readonly productRepository: IProductRepository<ProductTypeOrmEntity>,
+    private readonly productRepository: IProductRepository,
   ) {
     super();
   }
@@ -26,40 +18,28 @@ export class RegisterProductInventoryStockUseCase extends ValueObjectErrorHandle
     const dbProduct = this.productRepository.findProductById(data.productId);
 
     return dbProduct.pipe(
-      switchMap((product: ProductTypeOrmEntity) => {
-        const productInventoryStockVO = this.createValueObject(
-          data.productStock + product.productInventoryStock,
-        );
+      switchMap((product: IProduct) => {
+        product.productInventoryStock =
+          product.productInventoryStock + data.productStock;
 
-        this.validateValueObject(productInventoryStockVO);
-
-        const newProduct = {
-          ...product,
-          productInventoryStock: productInventoryStockVO.valueOf(),
-        };
+        const newProduct = this.validateObject(product);
 
         return this.productRepository.saveProduct(newProduct);
       }),
-    ) as unknown as Observable<IProduct>;
+    );
   }
 
-  createValueObject(stock: number): ProductInventoryStockValueObject {
-    const productInventoryStockVO = new ProductInventoryStockValueObject(stock);
+  private validateObject(product: IProduct): IProduct {
+    const newProductEntity = new ProductEntity(product);
 
-    return productInventoryStockVO;
-  }
-
-  validateValueObject(valueObject: ProductInventoryStockValueObject): void {
-    if (
-      valueObject instanceof ProductInventoryStockValueObject &&
-      valueObject.hasErrors()
-    )
-      this.setErrors(valueObject.getErrors());
-
-    if (this.hasErrors())
-      throw new ValueObjectException(
-        'RegisterProductInventoryStockUseCase Has Errors',
-        this.getErrors(),
-      );
+    return {
+      productId: newProductEntity.productId.valueOf(),
+      productName: newProductEntity.productName.valueOf(),
+      productDescription: newProductEntity.productDescription.valueOf(),
+      productPrice: newProductEntity.productPrice.valueOf(),
+      productInventoryStock: newProductEntity.productInventoryStock.valueOf(),
+      productCategory: newProductEntity.productCategory.valueOf(),
+      productBranch: product.productBranch,
+    };
   }
 }

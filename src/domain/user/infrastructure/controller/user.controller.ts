@@ -1,7 +1,7 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { RegisterUserUseCase } from '../../application/register-user.use-case';
-import { IUser } from '../../model/interfaces';
+import { IUser } from '../../domain/interfaces';
 import { RegisterUserDTO } from '../dto';
 
 @Controller('users')

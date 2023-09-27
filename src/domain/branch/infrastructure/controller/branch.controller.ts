@@ -1,7 +1,7 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { RegisterBranchUseCase } from '../../application/register-branch.use-case';
-import { IBranch } from '../../model/interfaces';
+import { IBranch } from '../../domain/interfaces';
 import { RegisterBranchDTO } from '../dto';
 
 @Controller('branches')

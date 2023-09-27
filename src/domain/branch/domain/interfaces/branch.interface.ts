@@ -4,7 +4,7 @@ import { IUser } from '../../../../domain/user/domain/interfaces';
 export interface IBranch {
   branchId?: string;
   branchName: string;
-  branchConutry: string;
+  branchCountry: string;
   branchCity: string;
   branchProducts: IProduct[];
   branchEmployees: IUser[];

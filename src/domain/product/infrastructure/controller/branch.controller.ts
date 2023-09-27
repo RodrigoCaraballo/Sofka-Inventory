@@ -6,7 +6,7 @@ import {
 } from '../../application';
 import { RegisterProductInventoryStockUseCase } from '../../application/register-product-inventory-stock.use-case';
 import { RegisterProductUseCase } from '../../application/register-product.use-case';
-import { IProduct } from '../../model';
+import { IProduct } from '../../domain';
 import {
   RegisterProductDTO,
   RegisterProductInventoryStockDTO,

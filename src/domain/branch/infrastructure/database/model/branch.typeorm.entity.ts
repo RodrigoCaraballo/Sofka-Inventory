@@ -1,6 +1,6 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { ProductTypeOrmEntity } from '../../../domain/product/domain';
-import { UserTypeOrmEntity } from '../../../domain/user/infrastructure/database/model/user.typeorm.entity';
+import { ProductTypeOrmEntity } from '../../../../../domain/product/domain';
+import { UserTypeOrmEntity } from '../../../../../domain/user/infrastructure/database/model/user.typeorm.entity';
 
 @Entity('Branch')
 export class BranchTypeOrmEntity {
