@@ -1,4 +1,8 @@
-import { IErrorValueObject, ValueObjectBase } from '../../../../lib/sofka';
+import {
+  IErrorValueObject,
+  ValueObjectBase,
+  ValueObjectException,
+} from '../../../../lib/sofka';
 
 enum CATEGORY_ENUM {
   Hand_Tools = 'hand tools',
@@ -29,7 +33,7 @@ export class ProductCategoryValueObject extends ValueObjectBase<string> {
         field: 'ProductCategory',
         message: 'Product Category is not a valid value',
       };
-      this.setError(error);
+      throw new ValueObjectException(error.message, [error]);
     }
   }
 }
