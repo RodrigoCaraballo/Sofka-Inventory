@@ -1,19 +1,19 @@
 import { Observable } from 'rxjs';
+import { RegisterUserCommand } from '../domain/command/register-user.command';
 import { IUser, IUserRepository } from '../domain/interfaces';
 import { UserEntity } from '../domain/model/user.entity';
-import { RegisterUserDTO } from '../infrastructure/dto';
 
 export class RegisterUserUseCase {
   constructor(private readonly userRepository: IUserRepository) {}
 
-  execute(data: RegisterUserDTO): Observable<IUser> {
+  execute(data: RegisterUserCommand): Observable<IUser> {
     const user = this.validateObject(data);
 
     return this.userRepository.saveUser(user);
   }
 
-  private validateObject(data: RegisterUserDTO): IUser {
-    const newUser = new UserEntity(data);
+  private validateObject(data: RegisterUserCommand): IUser {
+    const newUser = new UserEntity(data.eventData);
 
     return {
       userId: newUser.userId.valueOf(),

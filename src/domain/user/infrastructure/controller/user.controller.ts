@@ -14,7 +14,7 @@ export class UserController {
 
   @Post()
   registerUser(@Body() dto: RegisterUserDTO): Observable<IUser> {
-    return this.registerUserUseCase.execute(dto).pipe(
+    return this.registerUserUseCase.execute({ eventData: dto }).pipe(
       tap((user: IUser) =>
         this.eventEmitter.emit('register-event', {
           eventType: 'USER_REGISTERED',

@@ -22,7 +22,7 @@ export class BranchLocationValueObject extends ValueObjectBase<Location> {
   }
 
   minContryExtension(): void {
-    if (this.value.country.length > MIN_EXTENSION) {
+    if (this.value.country.length < MIN_EXTENSION) {
       const error: IErrorValueObject = {
         field: 'LocationCountry',
         message: `Location Country must be at least ${MIN_EXTENSION} characters`,
@@ -32,7 +32,7 @@ export class BranchLocationValueObject extends ValueObjectBase<Location> {
   }
 
   minCityExtension(): void {
-    if (this.value.city.length > MIN_EXTENSION) {
+    if (this.value.city.length < MIN_EXTENSION) {
       const error: IErrorValueObject = {
         field: 'Location City',
         message: `Location City must be at least ${MIN_EXTENSION} characters`,

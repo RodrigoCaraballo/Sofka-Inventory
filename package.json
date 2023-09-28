@@ -23,6 +23,7 @@
     "@nestjs/common": "^10.0.0",
     "@nestjs/config": "^3.1.1",
     "@nestjs/core": "^10.0.0",
+    "@nestjs/cqrs": "^10.2.6",
     "@nestjs/event-emitter": "^2.0.2",
     "@nestjs/mongoose": "^10.0.1",
     "@nestjs/platform-express": "^10.0.0",
@@ -65,8 +66,8 @@
       "json",
       "ts"
     ],
-    "rootDir": "src",
-    "testRegex": ".*\\.spec\\.ts$",
+    "rootDir": "test",
+    "testRegex": ".*\\.spec\\.ts",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
     },
@@ -74,6 +75,14 @@
       "**/*.(t|j)s"
     ],
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "coveragePathIgnorePatterns": [
+      "/node_modules/",
+      "/test/",
+      ".module.ts",
+      ".mock.ts",
+      "main.ts",
+      "index.ts"
+    ]
   }
 }
