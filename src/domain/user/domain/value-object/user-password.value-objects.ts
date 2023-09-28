@@ -6,7 +6,7 @@ import {
 
 const MIN_EXTENSION = 8;
 const MAX_EXTENSION = 16;
-const REGEX = '^(?=w*d)(?=w*[A-Z])(?=w*[a-z])S{8,16}$';
+const REGEX = new RegExp(`^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[^\n\r]+$`);
 
 export class UserPasswordValueObject extends ValueObjectBase<string> {
   validateData(): void {
@@ -36,7 +36,7 @@ export class UserPasswordValueObject extends ValueObjectBase<string> {
   }
 
   passwordPattern(): void {
-    if (!this.value.match(REGEX)) {
+    if (!REGEX.test(this.value)) {
       const error: IErrorValueObject = {
         field: 'UserPassword',
         message: 'User Password is not a valid pattern',

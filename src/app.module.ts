@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { MongooseModule } from '@nestjs/mongoose';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -8,10 +9,11 @@ import { UserModule } from './domain/user/user.module';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      envFilePath: '.env',
+    }),
     EventEmitterModule.forRoot(),
-    MongooseModule.forRoot(
-      'mongodb+srv://rodrigocaraballo:rodri007@cluster0.fzcprav.mongodb.net/inventory?retryWrites=true&w=majority',
-    ),
+    MongooseModule.forRoot(process.env.MONGO_DB_URI),
     TypeOrmModule.forRoot({
       type: 'mysql',
       host: '127.0.0.1',

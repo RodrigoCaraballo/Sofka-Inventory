@@ -1,3 +1,4 @@
+import { BranchTypeOrmEntity } from 'src/domain/branch/infrastructure/database/model/branch.typeorm.entity';
 import {
   Column,
   Entity,
@@ -5,7 +6,6 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { BranchTypeOrmEntity } from '../../../../../domain/branch/model/branch.typeorm.entity';
 
 @Entity('Product')
 export class ProductTypeOrmEntity {
