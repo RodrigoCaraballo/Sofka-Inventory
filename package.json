@@ -79,10 +79,22 @@
     "coveragePathIgnorePatterns": [
       "/node_modules/",
       "/test/",
-      ".module.ts",
-      ".mock.ts",
-      "main.ts",
-      "index.ts"
-    ]
+      "<rootDir>/main.ts",
+      "<rootDir>/shared/sofka",
+      "<rootDir>/app.module.ts",
+      "<rootDir>/subdomains/commodity/contexts/product/infrastructure",
+      "<rootDir>/subdomains/commodity/contexts/publication",
+      "/index.ts$",
+      "/enum.ts$",
+      "/module.ts$"
+    ],
+    "moduleNameMapper": {
+      "^@validations(.)$": "<rootDir>/shared/validations$1",
+      "^@ValueObjectBase(.)$": "<rootDir>/shared/domain/value-object$1",
+      "^@context/product/domain(.)$": "<rootDir>/subdomains/commodity/contexts/product/domain$1",
+      "^@context/product/applications(.)$": "<rootDir>/subdomains/commodity/contexts/product/application$1",
+      "^@context/product/infrastructure(.)$": "<rootDir>/subdomains/commodity/contexts/product/infrastructure$1",
+      "^@sofka(.)$": "<rootDir>/shared/sofka$1"
+    }
   }
 }
