@@ -1,20 +1,31 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { RegisterEventUseCase } from './application/register-event.use-case';
+
+import { MongooseModule } from '@nestjs/mongoose';
+import {
+  EventMongoose,
+  EventMongooseSchema,
+} from './infrastructure/database/model/event.mongoose.document';
 import { EventTypeOrmEntity } from './infrastructure/database/model/event.typeorm.entity';
-import { EventTypeOrmRepository } from './infrastructure/database/repository/event.typeorm.repository';
+import { EventMongooseRepository } from './infrastructure/database/repository/event.mongoose.repository';
+import { RegisterEventListener } from './infrastructure/listener/register-event.use-case';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([EventTypeOrmEntity])],
+  imports: [
+    MongooseModule.forFeature([
+      { name: EventMongoose.name, schema: EventMongooseSchema },
+    ]),
+    TypeOrmModule.forFeature([EventTypeOrmEntity]),
+  ],
   providers: [
-    EventTypeOrmRepository,
+    EventMongooseRepository,
     {
-      provide: RegisterEventUseCase,
-      useFactory: (eventRepository: EventTypeOrmRepository) =>
-        new RegisterEventUseCase(eventRepository),
-      inject: [EventTypeOrmRepository],
+      provide: RegisterEventListener,
+      useFactory: (eventRepository: EventMongooseRepository) =>
+        new RegisterEventListener(eventRepository),
+      inject: [EventMongooseRepository],
     },
   ],
-  exports: [RegisterEventUseCase],
+  exports: [],
 })
 export class CommonsModule {}

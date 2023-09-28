@@ -10,7 +10,7 @@ import {
   RegisterResellerSaleUseCase,
 } from './application';
 import { ProductTypeOrmEntity } from './domain';
-import { ProductsController } from './infrastructure/controller/branch.controller';
+import { ProductsController } from './infrastructure/controller/product.controller';
 import { ProductTypeOrmRepository } from './infrastructure/database/repository/product.repository';
 
 @Module({
