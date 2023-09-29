@@ -1,8 +1,9 @@
 export abstract class Command<T> {
-  eventType?: string;
+  readonly eventType: string;
   eventData: T;
-  constructor(eventData: T, eventType?: string) {
-    this.eventData = eventData;
+
+  constructor(eventType: string, eventData: T) {
     this.eventType = eventType;
+    this.eventData = eventData;
   }
 }
