@@ -23,6 +23,7 @@
     "@nestjs/common": "^10.0.0",
     "@nestjs/config": "^3.1.1",
     "@nestjs/core": "^10.0.0",
+    "@nestjs/cqrs": "^10.2.6",
     "@nestjs/event-emitter": "^2.0.2",
     "@nestjs/mongoose": "^10.0.1",
     "@nestjs/platform-express": "^10.0.0",
@@ -65,8 +66,8 @@
       "json",
       "ts"
     ],
-    "rootDir": "src",
-    "testRegex": ".*\\.spec\\.ts$",
+    "rootDir": "test",
+    "testRegex": ".*\\.spec\\.ts",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
     },
@@ -74,6 +75,26 @@
       "**/*.(t|j)s"
     ],
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "coveragePathIgnorePatterns": [
+      "/node_modules/",
+      "/test/",
+      "<rootDir>/main.ts",
+      "<rootDir>/shared/sofka",
+      "<rootDir>/app.module.ts",
+      "<rootDir>/subdomains/commodity/contexts/product/infrastructure",
+      "<rootDir>/subdomains/commodity/contexts/publication",
+      "/index.ts$",
+      "/enum.ts$",
+      "/module.ts$"
+    ],
+    "moduleNameMapper": {
+      "^@validations(.)$": "<rootDir>/shared/validations$1",
+      "^@ValueObjectBase(.)$": "<rootDir>/shared/domain/value-object$1",
+      "^@context/product/domain(.)$": "<rootDir>/subdomains/commodity/contexts/product/domain$1",
+      "^@context/product/applications(.)$": "<rootDir>/subdomains/commodity/contexts/product/application$1",
+      "^@context/product/infrastructure(.)$": "<rootDir>/subdomains/commodity/contexts/product/infrastructure$1",
+      "^@sofka(.)$": "<rootDir>/shared/sofka$1"
+    }
   }
 }
