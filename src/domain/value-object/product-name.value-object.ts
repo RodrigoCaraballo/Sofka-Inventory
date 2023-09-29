@@ -5,7 +5,7 @@ import {
 } from '@Sofka';
 
 const MIN_EXTENSION = 3;
-const MAX_EXTENSION = 40;
+const MAX_EXTENSION = 100;
 
 export class ProductNameValueObject extends ValueObjectBase<string> {
   validateData(): void {

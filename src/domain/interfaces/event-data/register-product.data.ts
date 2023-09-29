@@ -3,7 +3,6 @@ export interface RegisterProductData {
   name: string;
   description: string;
   price: number;
-  inventoryStock: number;
   category: string;
   branchId: string;
 }

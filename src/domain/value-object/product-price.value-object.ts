@@ -4,7 +4,7 @@ import {
   ValueObjectException,
 } from '@Sofka';
 
-const MIN_VALUE = 0;
+const MIN_VALUE = 1;
 
 export class ProductPriceValueObject extends ValueObjectBase<number> {
   validateData(): void {

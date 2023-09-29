@@ -10,8 +10,8 @@ type Location = {
 };
 
 const MIN_EXTENSION = 3;
-const MAX_COUNTRY_EXTENSION = 35;
-const MAX_CITY_EXTENSION = 85;
+const MAX_COUNTRY_EXTENSION = 50;
+const MAX_CITY_EXTENSION = 90;
 
 export class BranchLocationValueObject extends ValueObjectBase<Location> {
   validateData(): void {

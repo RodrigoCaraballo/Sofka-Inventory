@@ -43,7 +43,7 @@ export class RegisterProductUseCase {
       name: data.name,
       description: data.description,
       price: data.price,
-      inventoryStock: data.inventoryStock,
+      inventoryStock: 0,
       category: data.category,
       branch: branch,
     });
