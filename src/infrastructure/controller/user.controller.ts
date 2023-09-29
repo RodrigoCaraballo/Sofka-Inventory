@@ -6,14 +6,14 @@ import { Observable } from 'rxjs';
 
 import { RegisterUserDTO } from '../dto/register-user.dto';
 
-@Controller('users')
+@Controller('api/v1/user')
 export class UserController {
   constructor(
     private readonly registerUserUseCase: RegisterUserUseCase,
     private readonly eventEmitter: EventEmitter2,
   ) {}
 
-  @Post()
+  @Post('register')
   registerUser(@Body() dto: RegisterUserDTO): Observable<IUser> {
     return this.registerUserUseCase.execute(dto);
   }

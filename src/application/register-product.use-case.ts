@@ -30,7 +30,7 @@ export class RegisterProductUseCase {
           name: product.name.valueOf(),
           description: product.description.valueOf(),
           price: product.price.valueOf(),
-          inventoryStock: product.inventoryStock.valueOf(),
+          inventoryStock: 0,
           category: product.category.valueOf(),
           branch: branch,
         });

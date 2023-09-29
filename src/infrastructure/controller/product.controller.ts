@@ -12,7 +12,7 @@ import { RegisterProductInventoryStockDTO } from '../dto/register-product-invent
 import { RegisterProductDTO } from '../dto/register-product.dto';
 import { RegisterSaleDTO } from '../dto/register-sale.dto';
 
-@Controller('products')
+@Controller('api/v1/product')
 export class ProductsController {
   constructor(
     private readonly registerProductUseCase: RegisterProductUseCase,
@@ -22,19 +22,19 @@ export class ProductsController {
     private readonly eventEmitter: EventEmitter2,
   ) {}
 
-  @Post()
+  @Post('/register')
   registerProduct(@Body() dto: RegisterProductDTO): Observable<IProduct> {
     return this.registerProductUseCase.execute(dto);
   }
 
-  @Post('/inventory-stock')
+  @Post('/purchase')
   registerProductInventoryStock(
     @Body() dto: RegisterProductInventoryStockDTO,
   ): Observable<IProduct> {
     return this.registerProductInventoryStockUseCase.execute(dto);
   }
 
-  @Post('/final-customer-sale')
+  @Post('/customer-sale')
   registerFinalCustomerSale(
     @Body() dto: RegisterSaleDTO,
   ): Observable<IProduct[]> {
