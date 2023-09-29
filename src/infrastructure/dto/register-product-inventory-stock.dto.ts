@@ -1,4 +1,4 @@
 export interface RegisterProductInventoryStockDTO {
-  productId: string;
-  productStock: number;
+  id: string;
+  inventoryStock: number;
 }

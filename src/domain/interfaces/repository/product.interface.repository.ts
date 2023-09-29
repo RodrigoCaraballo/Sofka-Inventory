@@ -4,6 +4,6 @@ import { IProduct } from '../model';
 export interface IProductRepository<T = IProduct> {
   saveProduct(product: T): Observable<T>;
   saveProducts(products: T[]): Observable<T[]>;
-  findProductById(productId: string): Observable<T>;
+  findProductById(id: string): Observable<T>;
   findProductsById(productsId: string[]): Observable<T[]>;
 }

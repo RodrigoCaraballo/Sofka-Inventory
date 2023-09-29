@@ -1,4 +1,5 @@
-export interface RegisterProductDTO {
+export interface RegisterProductData {
+  id?: string;
   name: string;
   description: string;
   price: number;

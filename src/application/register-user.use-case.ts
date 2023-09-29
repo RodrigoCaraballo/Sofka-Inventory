@@ -1,27 +1,51 @@
 import { RegisterUserCommand } from '@Command';
-import { IUser, IUserRepository } from '@Interfaces';
+import {
+  IBranch,
+  IBranchRepository,
+  IUser,
+  IUserRepository,
+  RegisterUserData,
+} from '@Interfaces';
 import { UserEntity } from '@Model';
-import { Observable } from 'rxjs';
+import { CommandBus } from '@nestjs/cqrs';
+import { Observable, switchMap } from 'rxjs';
 
 export class RegisterUserUseCase {
-  constructor(private readonly userRepository: IUserRepository) {}
+  constructor(
+    private readonly userRepository: IUserRepository,
+    private readonly branchRepository: IBranchRepository,
+    private readonly commandBus: CommandBus,
+  ) {}
 
-  execute(data: RegisterUserCommand): Observable<IUser> {
-    const user = this.validateObject(data);
+  execute(data: RegisterUserData): Observable<IUser> {
+    const userBranch = this.getBranch(data.branchId);
 
-    return this.userRepository.saveUser(user);
+    return userBranch.pipe(
+      switchMap((branch: IBranch) => {
+        const user = this.validateObject(data, branch);
+        this.commandBus.execute(
+          new RegisterUserCommand(data.branchId, JSON.stringify(user)),
+        );
+        return this.userRepository.saveUser(user);
+      }),
+    );
   }
 
-  private validateObject(data: RegisterUserCommand): IUser {
-    const newUser = new UserEntity(data.eventData);
+  private getBranch(branchId: string): Observable<IBranch> {
+    return this.branchRepository.findBranchById(branchId);
+  }
+
+  private validateObject(data: RegisterUserData, userBranch: IBranch): IUser {
+    const newUser = new UserEntity(data);
 
     return {
-      userId: newUser.userId.valueOf(),
-      userName: newUser.userName.valueOf().userName,
-      userLastName: newUser.userName.valueOf().userLastName,
-      userPassword: newUser.userPassword.valueOf(),
-      userEmail: newUser.userEmail.valueOf(),
-      userRole: newUser.userRole.valueOf(),
+      id: newUser.id.valueOf(),
+      name: newUser.name.valueOf().userName,
+      lastName: newUser.name.valueOf().userLastName,
+      password: newUser.password.valueOf(),
+      email: newUser.email.valueOf(),
+      role: newUser.role.valueOf(),
+      branch: userBranch,
     };
   }
 }

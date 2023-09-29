@@ -8,22 +8,22 @@ import {
 } from '../value-object';
 
 export class BranchEntity {
-  branchId: UUIDValueObject;
-  branchName: BranchNameValueObject;
-  branchLocation: BranchLocationValueObject;
-  branchProducts: IProduct[];
-  branchEmployees: IUser[];
+  id: UUIDValueObject;
+  name: BranchNameValueObject;
+  location: BranchLocationValueObject;
+  products: IProduct[];
+  employees: IUser[];
 
   constructor(data: IBranch) {
-    if (data.branchId) this.branchId = new UUIDValueObject(data.branchId);
-    else this.branchId = new UUIDValueObject(uuidv4());
+    if (data.id) this.id = new UUIDValueObject(data.id);
+    else this.id = new UUIDValueObject(uuidv4());
 
-    this.branchName = new BranchNameValueObject(data.branchName);
-    this.branchLocation = new BranchLocationValueObject({
-      country: data.branchCountry,
-      city: data.branchCity,
+    this.name = new BranchNameValueObject(data.name);
+    this.location = new BranchLocationValueObject({
+      country: data.country,
+      city: data.city,
     });
-    this.branchProducts = this.branchProducts;
-    this.branchEmployees = data.branchEmployees;
+    this.products = this.products;
+    this.employees = data.employees;
   }
 }

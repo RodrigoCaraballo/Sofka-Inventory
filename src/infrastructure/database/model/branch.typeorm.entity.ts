@@ -5,26 +5,26 @@ import { UserTypeOrmEntity } from './user.typeorm.entity';
 @Entity('Branch')
 export class BranchTypeOrmEntity {
   @PrimaryGeneratedColumn('uuid')
-  branchId: string;
+  id: string;
 
   @Column('varchar')
-  branchName: string;
+  name: string;
 
   @Column('varchar')
-  branchCountry: string;
+  country: string;
 
   @Column('varchar')
-  branchCity: string;
+  city: string;
 
   @OneToMany(
     (type) => ProductTypeOrmEntity,
-    (product: ProductTypeOrmEntity) => product.productBranch,
+    (product: ProductTypeOrmEntity) => product.branch,
   )
-  branchProducts: ProductTypeOrmEntity[];
+  products: ProductTypeOrmEntity[];
 
   @OneToMany(
     (type) => UserTypeOrmEntity,
-    (user: UserTypeOrmEntity) => user.userBranch,
+    (user: UserTypeOrmEntity) => user.branch,
   )
-  branchEmployees: UserTypeOrmEntity[];
+  employees: UserTypeOrmEntity[];
 }

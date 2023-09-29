@@ -1,23 +1,23 @@
+import { Command } from '@Command';
 import { IEvent, IEventRepository } from '@Interfaces';
-import { Injectable } from '@nestjs/common';
-import { OnEvent } from '@nestjs/event-emitter';
+import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { v4 as uuidv4 } from 'uuid';
 
 type EventCommand = {
+  eventAggregateRootId: string;
   eventType: string;
   eventData: string;
 };
 
-@Injectable()
-export class RegisterEventListener {
+@CommandHandler(Command)
+export class RegisterEventListener implements ICommandHandler<Command> {
   constructor(private readonly eventRepository: IEventRepository) {}
-
-  @OnEvent('register-event')
-  execute(event: EventCommand): void {
+  execute(command: Command): any {
     const newEvent: IEvent = {
       eventId: uuidv4(),
-      eventType: event.eventType,
-      eventData: event.eventData,
+      eventAggregateRootId: command.eventAggregateRootId,
+      eventType: command.eventType,
+      eventData: command.eventData,
       eventPublishedAt: new Date(),
     };
 

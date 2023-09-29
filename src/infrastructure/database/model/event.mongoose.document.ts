@@ -9,6 +9,9 @@ export class EventMongoose {
   eventType: string;
 
   @Prop()
+  eventAggregateRootId: string;
+
+  @Prop()
   eventData: string;
 
   @Prop()

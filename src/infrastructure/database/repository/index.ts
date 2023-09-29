@@ -1,4 +1,4 @@
-export * from './branch.repository';
+export * from './branch.typeorm.repository';
 export * from './event.mongoose.repository';
-export * from './product.repository';
+export * from './product.typeorm.repository';
 export * from './user.typeorm.repository';

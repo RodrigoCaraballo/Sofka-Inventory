@@ -1,8 +1,14 @@
-export abstract class Command<T> {
+export abstract class Command {
+  eventAggregateRootId: string;
   readonly eventType: string;
-  eventData: T;
+  eventData: string;
 
-  constructor(eventType: string, eventData: T) {
+  constructor(
+    eventAggregateRootId: string,
+    eventType: string,
+    eventData: string,
+  ) {
+    this.eventAggregateRootId = eventAggregateRootId;
     this.eventType = eventType;
     this.eventData = eventData;
   }

@@ -8,22 +8,22 @@ import { UserRoleValueObject } from '../value-object/user.role.value-object';
 import { UUIDValueObject } from '../value-object/uuid.value-object';
 
 export class UserEntity {
-  userId: UUIDValueObject;
-  userName: UserNameValueObject;
-  userPassword: UserPasswordValueObject;
-  userEmail: UserEmailValueObject;
-  userRole: UserRoleValueObject;
+  id: UUIDValueObject;
+  name: UserNameValueObject;
+  password: UserPasswordValueObject;
+  email: UserEmailValueObject;
+  role: UserRoleValueObject;
 
   constructor(data: IUser) {
-    if (data.userId) this.userId = new UUIDValueObject(data.userId);
-    else this.userId = new UUIDValueObject(uuidv4());
+    if (data.id) this.id = new UUIDValueObject(data.id);
+    else this.id = new UUIDValueObject(uuidv4());
 
-    this.userName = new UserNameValueObject({
-      userName: data.userName,
-      userLastName: data.userLastName,
+    this.name = new UserNameValueObject({
+      userName: data.name,
+      userLastName: data.name,
     });
-    this.userPassword = new UserPasswordValueObject(data.userPassword);
-    this.userEmail = new UserEmailValueObject(data.userEmail);
-    this.userRole = new UserRoleValueObject(data.userRole);
+    this.password = new UserPasswordValueObject(data.password);
+    this.email = new UserEmailValueObject(data.email);
+    this.role = new UserRoleValueObject(data.role);
   }
 }

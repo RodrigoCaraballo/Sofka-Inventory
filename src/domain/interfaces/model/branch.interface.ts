@@ -2,10 +2,10 @@ import { IProduct } from './product.interface';
 import { IUser } from './user.interface';
 
 export interface IBranch {
-  branchId?: string;
-  branchName?: string;
-  branchCountry?: string;
-  branchCity?: string;
-  branchProducts?: IProduct[];
-  branchEmployees?: IUser[];
+  id?: string;
+  name?: string;
+  country?: string;
+  city?: string;
+  products?: IProduct[];
+  employees?: IUser[];
 }

@@ -13,10 +13,10 @@ export class UserTypeOrmRepository implements IUserRepository {
   saveUser(user: IUser): Observable<IUser> {
     return from(this.userRepository.save(user));
   }
-  findUserById(userId: string): Observable<IUser> {
-    return from(this.userRepository.findOne({ where: { userId } }));
+  findUserById(id: string): Observable<IUser> {
+    return from(this.userRepository.findOne({ where: { id } }));
   }
-  findUserByEmail(userEmail: string): Observable<IUser> {
-    return from(this.userRepository.findOne({ where: { userEmail } }));
+  findUserByEmail(email: string): Observable<IUser> {
+    return from(this.userRepository.findOne({ where: { email } }));
   }
 }

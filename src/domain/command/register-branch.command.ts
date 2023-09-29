@@ -1,4 +1,7 @@
-import { IBranch } from '../interfaces/model';
 import { Command } from './command.abstract';
 
-export class RegisterBranchCommand extends Command<IBranch> {}
+export class RegisterBranchCommand extends Command {
+  constructor(eventAggrateRootId: string, eventData: string) {
+    super(eventAggrateRootId, 'BRANCH_REGISTERED', eventData);
+  }
+}

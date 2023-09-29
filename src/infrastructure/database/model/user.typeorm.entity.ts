@@ -10,27 +10,27 @@ import { BranchTypeOrmEntity } from './branch.typeorm.entity';
 @Entity('User')
 export class UserTypeOrmEntity {
   @PrimaryGeneratedColumn('uuid')
-  userId: string;
+  id: string;
 
   @Column('varchar')
-  userName: string;
+  name: string;
 
   @Column('varchar')
-  userLastName: string;
+  lastName: string;
 
   @Column('varchar')
-  userPassword: string;
+  password: string;
 
   @Column('varchar')
-  userEmail: string;
+  email: string;
 
   @Column('varchar')
-  userRole: string;
+  role: string;
 
   @OneToOne(
     (type) => BranchTypeOrmEntity,
-    (entity: BranchTypeOrmEntity) => entity.branchEmployees,
+    (entity: BranchTypeOrmEntity) => entity.employees,
   )
   @JoinColumn()
-  userBranch?: BranchTypeOrmEntity;
+  branch?: BranchTypeOrmEntity;
 }

@@ -20,16 +20,22 @@ export class ProductTypeOrmRepository implements IProductRepository {
     return from(this.productRepository.save(products));
   }
 
-  findProductById(productId: string): Observable<IProduct> {
-    return from(this.productRepository.findOne({ where: { productId } }));
+  findProductById(id: string): Observable<IProduct> {
+    return from(
+      this.productRepository.findOne({
+        where: { id },
+        relations: ['branch'],
+      }),
+    );
   }
 
   findProductsById(productsId: string[]): Observable<IProduct[]> {
     return from(
       this.productRepository.find({
         where: {
-          productId: In(productsId),
+          id: In(productsId),
         },
+        relations: ['branch'],
       }),
     );
   }

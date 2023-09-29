@@ -13,7 +13,7 @@ export class BranchTypeOrmRepository implements IBranchRepository {
   saveBranch(branch: IBranch): Observable<IBranch> {
     return from(this.branchRepository.save(branch));
   }
-  findBranchById(branchId: string): Observable<IBranch> {
-    return from(this.branchRepository.findOne({ where: { branchId } }));
+  findBranchById(id: string): Observable<IBranch> {
+    return from(this.branchRepository.findOne({ where: { id } }));
   }
 }

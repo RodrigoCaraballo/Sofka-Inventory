@@ -1,48 +1,50 @@
-import { RegisterSaleDTO } from '@DTO';
+import { RegisterProductResellerSaleCommand } from '@Command';
 import { ProductTypeOrmRepository } from '@Database';
-import { IProduct, IProductRepository } from '@Interfaces';
+import { IProduct, IProductRepository, RegisterSaleData } from '@Interfaces';
 import { ProductEntity } from '@Model';
 import { BadRequestException, Inject } from '@nestjs/common';
-import { Observable, of, switchMap } from 'rxjs';
+import { CommandBus } from '@nestjs/cqrs';
+import { Observable, switchMap } from 'rxjs';
 
 export class RegisterResellerSaleUseCase {
   constructor(
     @Inject(ProductTypeOrmRepository)
     private readonly productRepository: IProductRepository,
+    private readonly commandBus: CommandBus,
   ) {}
 
-  execute(data: RegisterSaleDTO): Observable<RegisterSaleDTO> {
-    const productsId = data.products.map((product) => product.productId);
+  execute(data: RegisterSaleData): Observable<IProduct[]> {
+    const productsId = data.products.map((product) => product.id);
+
     const dbProduct = this.productRepository.findProductsById(productsId);
 
     return dbProduct.pipe(
       switchMap((products: IProduct[]) => {
-        const newProducts = products.map((product) => {
+        const newProducts = products.map((product: IProduct) => {
           const findProduct = data.products.find(
-            (dataProduct) => dataProduct.productId === product.productId,
+            (dataProduct) => dataProduct.id === product.id,
           );
 
           if (!findProduct) return product;
 
-          if (product.productInventoryStock < findProduct.productStock)
+          if (product.inventoryStock < findProduct.inventoryStock)
             throw new BadRequestException('Product Inventory Stock not enough');
 
-          product.productInventoryStock =
-            product.productInventoryStock - findProduct.productStock;
+          product.inventoryStock =
+            product.inventoryStock - findProduct.inventoryStock;
 
           const newProduct = this.validateObject(product);
 
           return newProduct;
         });
 
-        this.productRepository.saveProducts(newProducts);
-
-        const newData = data.products.map((product) => ({
-          ...product,
-          productPrice: product.productPrice * 0.9,
-        }));
-
-        return of({ products: newData });
+        this.commandBus.execute(
+          new RegisterProductResellerSaleCommand(
+            newProducts[0].branch.id,
+            JSON.stringify(newProducts),
+          ),
+        );
+        return this.productRepository.saveProducts(newProducts);
       }),
     );
   }
@@ -51,13 +53,13 @@ export class RegisterResellerSaleUseCase {
     const newProductEntity = new ProductEntity(product);
 
     return {
-      productId: newProductEntity.productId.valueOf(),
-      productName: newProductEntity.productName.valueOf(),
-      productDescription: newProductEntity.productDescription.valueOf(),
-      productPrice: newProductEntity.productPrice.valueOf(),
-      productInventoryStock: newProductEntity.productInventoryStock.valueOf(),
-      productCategory: newProductEntity.productCategory.valueOf(),
-      productBranch: product.productBranch,
+      id: newProductEntity.id.valueOf(),
+      name: newProductEntity.name.valueOf(),
+      description: newProductEntity.description.valueOf(),
+      price: newProductEntity.price.valueOf(),
+      inventoryStock: newProductEntity.inventoryStock.valueOf(),
+      category: newProductEntity.category.valueOf(),
+      branch: product.branch,
     };
   }
 }

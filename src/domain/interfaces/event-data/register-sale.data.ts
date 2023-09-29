@@ -3,6 +3,6 @@ type ProductSale = {
   inventoryStock: number;
 };
 
-export interface RegisterSaleDTO {
+export interface RegisterSaleData {
   products: ProductSale[];
 }

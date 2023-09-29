@@ -1,4 +1,11 @@
-import { IProduct } from '../interfaces/model';
 import { Command } from './command.abstract';
 
-export class RegisterFinalCustomerSaleCommand extends Command<IProduct> {}
+export class RegisterFinalCustomerSaleCommand extends Command {
+  constructor(eventAggrateRootId: string, eventData: string) {
+    super(
+      eventAggrateRootId,
+      'PRODUCT_FINAL_CUSTOMER_SALE_REGISTERED',
+      eventData,
+    );
+  }
+}

@@ -10,27 +10,27 @@ import { BranchTypeOrmEntity } from './branch.typeorm.entity';
 @Entity('Product')
 export class ProductTypeOrmEntity {
   @PrimaryGeneratedColumn('uuid')
-  productId: string;
+  id: string;
 
   @Column()
-  productName: string;
+  name: string;
 
   @Column()
-  productDescription: string;
+  description: string;
 
   @Column()
-  productPrice: number;
+  price: number;
 
   @Column()
-  productInventoryStock: number;
+  inventoryStock: number;
 
   @Column()
-  productCategory: string;
+  category: string;
 
   @OneToOne(
     (type) => BranchTypeOrmEntity,
-    (entity: BranchTypeOrmEntity) => entity.branchProducts,
+    (entity: BranchTypeOrmEntity) => entity.products,
   )
   @JoinColumn()
-  productBranch: BranchTypeOrmEntity;
+  branch: BranchTypeOrmEntity;
 }

@@ -6,7 +6,9 @@ import {
   RegisterResellerSaleUseCase,
   RegisterUserUseCase,
 } from '@Application';
+import { RegisterBranchCommand } from '@Command';
 import { Module } from '@nestjs/common';
+import { CommandBus, CqrsModule } from '@nestjs/cqrs';
 import { BranchController } from './controller/branch.controller';
 import { ProductsController } from './controller/product.controller';
 import { UserController } from './controller/user.controller';
@@ -19,48 +21,68 @@ import {
 } from './database/repository';
 import { RegisterEventListener } from './listener/register-event.use-case';
 
+export const CommandHandlers = [RegisterBranchCommand];
+
 @Module({
-  imports: [DatabaseModule],
+  imports: [DatabaseModule, CqrsModule],
   providers: [
+    ...CommandHandlers,
     {
       provide: RegisterBranchUseCase,
       useFactory: (
         branchRepository: BranchTypeOrmRepository,
-        userRepository: UserTypeOrmRepository,
-      ) => new RegisterBranchUseCase(branchRepository, userRepository),
-      inject: [BranchTypeOrmRepository, UserTypeOrmRepository],
+        commandBus: CommandBus,
+      ) => new RegisterBranchUseCase(branchRepository, commandBus),
+      inject: [BranchTypeOrmRepository, CommandBus],
     },
     {
       provide: RegisterUserUseCase,
-      useFactory: (userRepository: UserTypeOrmRepository) =>
-        new RegisterUserUseCase(userRepository),
-      inject: [UserTypeOrmRepository],
+      useFactory: (
+        userRepository: UserTypeOrmRepository,
+        branchRepository: BranchTypeOrmRepository,
+        commandBus: CommandBus,
+      ) =>
+        new RegisterUserUseCase(userRepository, branchRepository, commandBus),
+      inject: [UserTypeOrmRepository, BranchTypeOrmRepository, CommandBus],
     },
     {
       provide: RegisterProductUseCase,
       useFactory: (
-        branchRepository: BranchTypeOrmRepository,
         productRepository: ProductTypeOrmRepository,
-      ) => new RegisterProductUseCase(branchRepository, productRepository),
-      inject: [BranchTypeOrmRepository, UserTypeOrmRepository],
+        branchRepository: BranchTypeOrmRepository,
+        commandBus: CommandBus,
+      ) =>
+        new RegisterProductUseCase(
+          productRepository,
+          branchRepository,
+          commandBus,
+        ),
+      inject: [ProductTypeOrmRepository, BranchTypeOrmRepository, CommandBus],
     },
     {
       provide: RegisterProductInventoryStockUseCase,
-      useFactory: (productRepository: ProductTypeOrmRepository) =>
-        new RegisterProductInventoryStockUseCase(productRepository),
-      inject: [ProductTypeOrmRepository],
+      useFactory: (
+        productRepository: ProductTypeOrmRepository,
+        commandBus: CommandBus,
+      ) =>
+        new RegisterProductInventoryStockUseCase(productRepository, commandBus),
+      inject: [ProductTypeOrmRepository, CommandBus],
     },
     {
       provide: RegisterFinalCustomerSaleUseCase,
-      useFactory: (productRepository: ProductTypeOrmRepository) =>
-        new RegisterFinalCustomerSaleUseCase(productRepository),
-      inject: [ProductTypeOrmRepository],
+      useFactory: (
+        productRepository: ProductTypeOrmRepository,
+        commandBus: CommandBus,
+      ) => new RegisterFinalCustomerSaleUseCase(productRepository, commandBus),
+      inject: [ProductTypeOrmRepository, CommandBus],
     },
     {
       provide: RegisterResellerSaleUseCase,
-      useFactory: (productRepository: ProductTypeOrmRepository) =>
-        new RegisterResellerSaleUseCase(productRepository),
-      inject: [ProductTypeOrmRepository],
+      useFactory: (
+        productRepository: ProductTypeOrmRepository,
+        commandBus: CommandBus,
+      ) => new RegisterResellerSaleUseCase(productRepository, commandBus),
+      inject: [ProductTypeOrmRepository, CommandBus],
     },
     {
       provide: RegisterEventListener,

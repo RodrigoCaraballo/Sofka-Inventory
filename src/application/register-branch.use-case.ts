@@ -1,79 +1,51 @@
-import { RegisterBranchDTO } from '@DTO';
-import {
-  IBranch,
-  IBranchRepository,
-  IUser,
-  IUserRepository,
-} from '@Interfaces';
+import { RegisterBranchCommand } from '@Command';
+import { IBranch, IBranchRepository, RegisterBranchData } from '@Interfaces';
 import { BranchEntity } from '@Model';
-import { Observable, switchMap, tap } from 'rxjs';
+import { CommandBus } from '@nestjs/cqrs';
+import { Observable } from 'rxjs';
 
 export class RegisterBranchUseCase {
   constructor(
     private readonly branchRepository: IBranchRepository,
-    private readonly userRepository: IUserRepository,
+    private readonly commandBus: CommandBus,
   ) {}
 
-  execute(data: RegisterBranchDTO): Observable<IBranch> {
-    const { userId } = data;
+  execute(data: RegisterBranchData): Observable<IBranch> {
+    const branch = this.createValueObject(data);
 
-    const user = this.getUser(userId);
-    const branch = user.pipe(
-      switchMap((user: IUser) => {
-        const newBranch = this.createValueObject(data, user);
-        return this.createBranch(newBranch);
-      }),
+    this.commandBus.execute(
+      new RegisterBranchCommand(branch.id, JSON.stringify(data)),
     );
-
-    branch.pipe(
-      tap((branch: IBranch) => {
-        return user.pipe(
-          tap((user: IUser) => {
-            user.userBranch = branch;
-            this.updateUserWithBranch(user);
-          }),
-        );
-      }),
-    );
-
-    return branch as unknown as Observable<IBranch>;
-  }
-
-  private getUser(userId: string): Observable<IUser> {
-    return this.userRepository.findUserById(userId);
+    return this.createBranch(branch);
   }
 
   private createBranch(branch: IBranch): Observable<IBranch> {
     return this.branchRepository.saveBranch({
-      branchId: branch.branchId,
-      branchName: branch.branchName,
-      branchCountry: branch.branchCountry,
-      branchCity: branch.branchCity,
-      branchProducts: branch.branchProducts,
-      branchEmployees: branch.branchEmployees,
+      id: branch.id,
+      name: branch.name,
+      country: branch.country,
+      city: branch.city,
+      products: branch.products,
+      employees: branch.employees,
     });
   }
 
-  private updateUserWithBranch(user: IUser): void {
-    this.userRepository.saveUser(user);
-  }
-
-  private createValueObject(data: RegisterBranchDTO, user: IUser): IBranch {
+  private createValueObject(data: RegisterBranchData): IBranch {
     const newBranch = new BranchEntity({
-      branchName: data.branchName,
-      branchCountry: data.branchCountry,
-      branchCity: data.branchCity,
-      branchProducts: [],
-      branchEmployees: [user],
+      name: data.name,
+      country: data.country,
+      city: data.city,
+      products: [],
+      employees: [],
     });
 
     return {
-      branchId: newBranch.branchId.valueOf(),
-      branchName: newBranch.branchName.valueOf(),
-      branchCountry: newBranch.branchLocation.valueOf().country,
-      branchCity: newBranch.branchLocation.valueOf().city,
-      branchProducts: newBranch.branchProducts,
-      branchEmployees: newBranch.branchEmployees,
+      id: newBranch.id.valueOf(),
+      name: newBranch.name.valueOf(),
+      country: newBranch.location.valueOf().country,
+      city: newBranch.location.valueOf().city,
+      products: newBranch.products,
+      employees: newBranch.employees,
     };
   }
 }
