@@ -1,55 +1,73 @@
 import { RegisterProductResellerSaleCommand } from '@Command';
-import { ProductTypeOrmRepository } from '@Database';
-import { IProduct, IProductRepository, RegisterSaleData } from '@Interfaces';
+import {
+  ICommandBus,
+  IProduct,
+  IProductRepository,
+  RegisterSaleData,
+} from '@Interfaces';
 import { ProductEntity } from '@Model';
-import { BadRequestException, Inject } from '@nestjs/common';
-import { CommandBus } from '@nestjs/cqrs';
+import { BadRequestException } from '@nestjs/common';
 import { Observable, switchMap } from 'rxjs';
 
 export class RegisterResellerSaleUseCase {
   constructor(
-    @Inject(ProductTypeOrmRepository)
     private readonly productRepository: IProductRepository,
-    private readonly commandBus: CommandBus,
+    private readonly commandBus: ICommandBus,
   ) {}
 
   execute(data: RegisterSaleData): Observable<IProduct[]> {
-    const productsId = data.products.map((product) => product.id);
-
-    const dbProduct = this.productRepository.findProductsById(productsId);
-
+    const dbProduct = this.getProducts(data);
     return dbProduct.pipe(
       switchMap((products: IProduct[]) => {
-        const newProducts = products.map((product: IProduct) => {
-          const findProduct = data.products.find(
-            (dataProduct) => dataProduct.id === product.id,
-          );
-
-          if (!findProduct) return product;
-
-          if (product.inventoryStock < findProduct.inventoryStock)
-            throw new BadRequestException('Product Inventory Stock not enough');
-
-          product.inventoryStock =
-            product.inventoryStock - findProduct.inventoryStock;
-
-          const newProduct = this.validateObject(product);
-
-          return newProduct;
-        });
-
-        this.commandBus.execute(
-          new RegisterProductResellerSaleCommand(
-            newProducts[0].branch.id,
-            JSON.stringify(newProducts),
-          ),
-        );
-        return this.productRepository.saveProducts(newProducts);
+        const updatedProducts = this.updateProductsStock(products, data);
+        this.emitCommand(updatedProducts);
+        return this.saveProducts(updatedProducts);
       }),
     );
   }
 
-  private validateObject(product: IProduct): IProduct {
+  private getProducts(data: RegisterSaleData): Observable<IProduct[]> {
+    const productsId = data.products.map((product) => product.id);
+    return this.productRepository.findProductsById(productsId);
+  }
+
+  private updateProductsStock(
+    products: IProduct[],
+    data: RegisterSaleData,
+  ): IProduct[] {
+    return products.map((product) => {
+      const findProduct = data.products.find(
+        (dataProduct) => dataProduct.id === product.id,
+      );
+
+      if (!findProduct) return product;
+
+      if (product.inventoryStock < findProduct.inventoryStock)
+        throw new BadRequestException('Product Inventory Stock not enough');
+
+      product.inventoryStock =
+        product.inventoryStock - findProduct.inventoryStock;
+
+      const newProduct = this.validateEntity(product);
+
+      return newProduct;
+    });
+  }
+
+  private emitCommand(products: IProduct[]): void {
+    this.commandBus.publish(
+      new RegisterProductResellerSaleCommand(
+        products[0].branch.id,
+        JSON.stringify(products),
+      ),
+    );
+  }
+
+  private saveProducts(products: IProduct[]): Observable<IProduct[]> {
+    return this.productRepository.saveProducts(products);
+  }
+
+  private validateEntity(product: IProduct): IProduct {
     const newProductEntity = new ProductEntity(product);
 
     return {

@@ -2,7 +2,7 @@ import {
   Column,
   Entity,
   JoinColumn,
-  OneToOne,
+  ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { BranchTypeOrmEntity } from './branch.typeorm.entity';
@@ -27,7 +27,7 @@ export class UserTypeOrmEntity {
   @Column('varchar')
   role: string;
 
-  @OneToOne(
+  @ManyToOne(
     (type) => BranchTypeOrmEntity,
     (entity: BranchTypeOrmEntity) => entity.employees,
   )

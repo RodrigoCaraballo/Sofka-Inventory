@@ -6,9 +6,7 @@ import {
   RegisterResellerSaleUseCase,
   RegisterUserUseCase,
 } from '@Application';
-import { RegisterBranchCommand } from '@Command';
 import { Module } from '@nestjs/common';
-import { CommandBus, CqrsModule } from '@nestjs/cqrs';
 import { BranchController } from './controller/branch.controller';
 import { ProductsController } from './controller/product.controller';
 import { UserController } from './controller/user.controller';
@@ -19,14 +17,11 @@ import {
   ProductTypeOrmRepository,
   UserTypeOrmRepository,
 } from './database/repository';
-import { RegisterEventListener } from './listener/register-event.use-case';
-
-export const CommandHandlers = [RegisterBranchCommand];
+import { CommandBus } from './listener/register-event.use-case';
 
 @Module({
-  imports: [DatabaseModule, CqrsModule],
+  imports: [DatabaseModule],
   providers: [
-    ...CommandHandlers,
     {
       provide: RegisterBranchUseCase,
       useFactory: (
@@ -85,9 +80,9 @@ export const CommandHandlers = [RegisterBranchCommand];
       inject: [ProductTypeOrmRepository, CommandBus],
     },
     {
-      provide: RegisterEventListener,
+      provide: CommandBus,
       useFactory: (eventRepository: EventMongooseRepository) =>
-        new RegisterEventListener(eventRepository),
+        new CommandBus(eventRepository),
       inject: [EventMongooseRepository],
     },
   ],

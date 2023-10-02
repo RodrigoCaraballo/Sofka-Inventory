@@ -1,18 +1,10 @@
 import { Command } from '@Command';
-import { IEvent, IEventRepository } from '@Interfaces';
-import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { ICommandBus, IEvent, IEventRepository } from '@Interfaces';
 import { v4 as uuidv4 } from 'uuid';
 
-type EventCommand = {
-  eventAggregateRootId: string;
-  eventType: string;
-  eventData: string;
-};
-
-@CommandHandler(Command)
-export class RegisterEventListener implements ICommandHandler<Command> {
+export class CommandBus implements ICommandBus {
   constructor(private readonly eventRepository: IEventRepository) {}
-  execute(command: Command): any {
+  publish(command: Command): void {
     const newEvent: IEvent = {
       eventId: uuidv4(),
       eventAggregateRootId: command.eventAggregateRootId,

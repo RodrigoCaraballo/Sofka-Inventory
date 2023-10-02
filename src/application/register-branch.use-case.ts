@@ -1,25 +1,25 @@
 import { RegisterBranchCommand } from '@Command';
 import { IBranch, IBranchRepository, RegisterBranchData } from '@Interfaces';
 import { BranchEntity } from '@Model';
-import { CommandBus } from '@nestjs/cqrs';
 import { Observable } from 'rxjs';
+import { ICommandBus } from 'src/domain/interfaces/event-publisher';
 
 export class RegisterBranchUseCase {
   constructor(
     private readonly branchRepository: IBranchRepository,
-    private readonly commandBus: CommandBus,
+    private readonly commandBus: ICommandBus,
   ) {}
 
   execute(data: RegisterBranchData): Observable<IBranch> {
-    const branch = this.createValueObject(data);
+    const branch = this.validateEntity(data);
 
-    this.commandBus.execute(
+    this.commandBus.publish(
       new RegisterBranchCommand(branch.id, JSON.stringify(data)),
     );
-    return this.createBranch(branch);
+    return this.registerBranch(branch);
   }
 
-  private createBranch(branch: IBranch): Observable<IBranch> {
+  private registerBranch(branch: IBranch): Observable<IBranch> {
     return this.branchRepository.saveBranch({
       id: branch.id,
       name: branch.name,
@@ -30,7 +30,7 @@ export class RegisterBranchUseCase {
     });
   }
 
-  private createValueObject(data: RegisterBranchData): IBranch {
+  private validateEntity(data: RegisterBranchData): IBranch {
     const newBranch = new BranchEntity({
       name: data.name,
       country: data.country,

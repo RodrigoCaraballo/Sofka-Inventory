@@ -6,7 +6,6 @@ import {
 } from '@Application';
 import { IProduct } from '@Interfaces';
 import { Body, Controller, Post } from '@nestjs/common';
-import { EventEmitter2 } from '@nestjs/event-emitter';
 import { Observable } from 'rxjs';
 import { RegisterProductInventoryStockDTO } from '../dto/register-product-inventory-stock.dto';
 import { RegisterProductDTO } from '../dto/register-product.dto';
@@ -19,7 +18,6 @@ export class ProductsController {
     private readonly registerProductInventoryStockUseCase: RegisterProductInventoryStockUseCase,
     private readonly registerFinalCustomerSaleUseCase: RegisterFinalCustomerSaleUseCase,
     private readonly registerResellerSaleUseCase: RegisterResellerSaleUseCase,
-    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   @Post('/register')

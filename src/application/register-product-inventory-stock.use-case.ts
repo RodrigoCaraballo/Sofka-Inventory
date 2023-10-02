@@ -1,45 +1,52 @@
 import { RegisterProductInventoryStockCommand } from '@Command';
-import { ProductTypeOrmRepository } from '@Database';
 import {
+  ICommandBus,
   IProduct,
   IProductRepository,
   RegisterProductInventoryStockData,
 } from '@Interfaces';
 import { ProductEntity } from '@Model';
-import { Inject, Injectable } from '@nestjs/common';
-import { CommandBus } from '@nestjs/cqrs';
 import { Observable, switchMap } from 'rxjs';
 
-@Injectable()
 export class RegisterProductInventoryStockUseCase {
   constructor(
-    @Inject(ProductTypeOrmRepository)
     private readonly productRepository: IProductRepository,
-    private readonly commandBus: CommandBus,
+    private readonly commandBus: ICommandBus,
   ) {}
 
   execute(data: RegisterProductInventoryStockData): Observable<IProduct> {
     const dbProduct = this.productRepository.findProductById(data.id);
-
     return dbProduct.pipe(
       switchMap((product: IProduct) => {
-        product.inventoryStock = product.inventoryStock + data.inventoryStock;
-
-        const newProduct = this.validateObject(product);
-
-        this.commandBus.execute(
-          new RegisterProductInventoryStockCommand(
-            product.branch.id,
-            JSON.stringify(newProduct),
-          ),
-        );
-
-        return this.productRepository.saveProduct(newProduct);
+        const productUpdated = this.updateProductStock(product, data);
+        this.emitCommand(productUpdated);
+        return this.saveProduct(productUpdated);
       }),
     );
   }
 
-  private validateObject(product: IProduct): IProduct {
+  private updateProductStock(
+    product: IProduct,
+    data: RegisterProductInventoryStockData,
+  ): IProduct {
+    product.inventoryStock = product.inventoryStock + data.inventoryStock;
+
+    return this.validateEntity(product);
+  }
+
+  private emitCommand(product: IProduct): void {
+    this.commandBus.publish(
+      new RegisterProductInventoryStockCommand(
+        product.branch.id,
+        JSON.stringify(product),
+      ),
+    );
+  }
+
+  private saveProduct(product: IProduct): Observable<IProduct> {
+    return this.productRepository.saveProduct(product);
+  }
+  private validateEntity(product: IProduct): IProduct {
     const newProductEntity = new ProductEntity(product);
 
     return {

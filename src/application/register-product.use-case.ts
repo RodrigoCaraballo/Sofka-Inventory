@@ -2,43 +2,53 @@ import { RegisterProductCommand } from '@Command';
 import {
   IBranch,
   IBranchRepository,
+  ICommandBus,
   IProduct,
   IProductRepository,
   RegisterProductData,
 } from '@Interfaces';
 import { ProductEntity } from '@Model';
-import { CommandBus } from '@nestjs/cqrs';
 import { Observable, switchMap } from 'rxjs';
 
 export class RegisterProductUseCase {
   constructor(
     private readonly productRepository: IProductRepository,
     private readonly branchRepository: IBranchRepository,
-    private readonly commandBus: CommandBus,
+    private readonly commandBus: ICommandBus,
   ) {}
 
   execute(data: RegisterProductData): Observable<IProduct> {
     return this.branchRepository.findBranchById(data.branchId).pipe(
       switchMap((branch: IBranch) => {
-        const product = this.createValueObject(data, branch);
-        this.commandBus.execute(
-          new RegisterProductCommand(data.branchId, JSON.stringify(product)),
-        );
-
-        return this.productRepository.saveProduct({
-          id: product.id.valueOf(),
-          name: product.name.valueOf(),
-          description: product.description.valueOf(),
-          price: product.price.valueOf(),
-          inventoryStock: 0,
-          category: product.category.valueOf(),
-          branch: branch,
-        });
+        const product = this.validateEntity(data, branch);
+        this.emitCommand(product, data.branchId);
+        return this.saveProduct(product, branch);
       }),
     );
   }
 
-  createValueObject(data: RegisterProductData, branch: IBranch): IProduct {
+  private emitCommand(product: IProduct, branchId: string): void {
+    this.commandBus.publish(
+      new RegisterProductCommand(branchId, JSON.stringify(product)),
+    );
+  }
+
+  private saveProduct(
+    product: IProduct,
+    branch: IBranch,
+  ): Observable<IProduct> {
+    return this.productRepository.saveProduct({
+      id: product.id,
+      name: product.name,
+      description: product.description,
+      price: product.price,
+      inventoryStock: 0,
+      category: product.category,
+      branch: branch,
+    });
+  }
+
+  private validateEntity(data: RegisterProductData, branch: IBranch): IProduct {
     const newProduct = new ProductEntity({
       name: data.name,
       description: data.description,

@@ -2,19 +2,19 @@ import { RegisterUserCommand } from '@Command';
 import {
   IBranch,
   IBranchRepository,
+  ICommandBus,
   IUser,
   IUserRepository,
   RegisterUserData,
 } from '@Interfaces';
 import { UserEntity } from '@Model';
-import { CommandBus } from '@nestjs/cqrs';
 import { Observable, switchMap } from 'rxjs';
 
 export class RegisterUserUseCase {
   constructor(
     private readonly userRepository: IUserRepository,
     private readonly branchRepository: IBranchRepository,
-    private readonly commandBus: CommandBus,
+    private readonly commandBus: ICommandBus,
   ) {}
 
   execute(data: RegisterUserData): Observable<IUser> {
@@ -22,10 +22,8 @@ export class RegisterUserUseCase {
 
     return userBranch.pipe(
       switchMap((branch: IBranch) => {
-        const user = this.validateObject(data, branch);
-        this.commandBus.execute(
-          new RegisterUserCommand(data.branchId, JSON.stringify(user)),
-        );
+        const user = this.validateEntity(data, branch);
+        this.emitCommand(data.branchId, user);
         return this.userRepository.saveUser(user);
       }),
     );
@@ -35,7 +33,13 @@ export class RegisterUserUseCase {
     return this.branchRepository.findBranchById(branchId);
   }
 
-  private validateObject(data: RegisterUserData, userBranch: IBranch): IUser {
+  private emitCommand(branchId: string, user: IUser): void {
+    this.commandBus.publish(
+      new RegisterUserCommand(branchId, JSON.stringify(user)),
+    );
+  }
+
+  private validateEntity(data: RegisterUserData, userBranch: IBranch): IUser {
     const newUser = new UserEntity(data);
 
     return {
