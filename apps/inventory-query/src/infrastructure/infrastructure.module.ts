@@ -12,7 +12,7 @@ import {
   QueryUserController,
 } from '@QueryInfrastructure';
 import { Module } from '@nestjs/common';
-import { ClientsModule, Transport } from '@nestjs/microservices';
+import { ClientsModule } from '@nestjs/microservices';
 import { DatabaseModule } from './database/database.module';
 import {
   BranchTypeOrmRepository,
@@ -21,22 +21,7 @@ import {
 } from './database/repository';
 
 @Module({
-  imports: [
-    ClientsModule.register([
-      {
-        name: 'BRANCH_RMQ',
-        transport: Transport.RMQ,
-        options: {
-          urls: ['amqp://localhost:5672'],
-          queue: 'BRANCH_QUEUE',
-          queueOptions: {
-            durable: false,
-          },
-        },
-      },
-    ]),
-    DatabaseModule,
-  ],
+  imports: [ClientsModule, DatabaseModule],
   providers: [
     {
       provide: RabbitRegisterBranchUseCase,
