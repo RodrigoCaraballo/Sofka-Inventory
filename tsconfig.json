@@ -18,18 +18,16 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
-      "@Application": ["./src/application"],
-      "@ValueObject": ["./src/domain/value-object"],
-      "@Domain": ["./src/domain/"],
-      "@Infrastructure": ["./src/infrastructure"],
-      "@Sofka": ["./src/lib/sofka"],
-      "@Command": ["./src/domain/command"],
-      "@Interfaces": ["./src/domain/interfaces"],
-      "@Model": ["./src/domain/model"],
-      "@Controller": ["./src/infrastructure/controller"],
-      "@Database": ["./src/infrastructure/database"],
-      "@DTO": ["./src/infrastructure/dto"],
-      "@Listener": ["./src/infrastructure/listener"]
+      "@Domain": ["./apps/domain"],
+      "@Sofka": ["./apps/domain/lib"],
+      // Command Microservice
+      "@CommandApplication": ["./apps/inventory-project-sofka/src/application"],
+      "@CommandInfrastructure": [
+        "./apps/inventory-project-sofka/src/infrastructure"
+      ],
+      // Query Microservice
+      "@QueryApplication": ["./apps/inventory-query/src/application"],
+      "@QueryInfrastructure": ["./apps/inventory-query/src/infrastructure"]
     }
   }
 }

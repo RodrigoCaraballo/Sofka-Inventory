@@ -1,8 +1,32 @@
 {
   "$schema": "https://json.schemastore.org/nest-cli",
   "collection": "@nestjs/schematics",
-  "sourceRoot": "src",
+  "sourceRoot": "apps/inventory-project-sofka/src",
   "compilerOptions": {
-    "deleteOutDir": true
+    "deleteOutDir": true,
+    "webpack": true,
+    "tsConfigPath": "apps/inventory-project-sofka/tsconfig.app.json"
+  },
+  "monorepo": true,
+  "root": "apps/inventory-project-sofka",
+  "projects": {
+    "inventory-project-sofka": {
+      "type": "application",
+      "root": "apps/inventory-project-sofka",
+      "entryFile": "main",
+      "sourceRoot": "apps/inventory-project-sofka/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/inventory-project-sofka/tsconfig.app.json"
+      }
+    },
+    "inventory-query": {
+      "type": "application",
+      "root": "apps/inventory-query",
+      "entryFile": "main",
+      "sourceRoot": "apps/inventory-query/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/inventory-query/tsconfig.app.json"
+      }
+    }
   }
 }
