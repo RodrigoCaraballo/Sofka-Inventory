@@ -7,8 +7,10 @@ import {
   RegisterUserUseCase,
 } from '@Application';
 import { Module } from '@nestjs/common';
+import { ClientProxy, ClientsModule, Transport } from '@nestjs/microservices';
 import { BranchController } from './controller/branch.controller';
 import { ProductsController } from './controller/product.controller';
+import { RabbitController } from './controller/rabbit.controller';
 import { UserController } from './controller/user.controller';
 import { DatabaseModule } from './database/database.module';
 import {
@@ -17,10 +19,25 @@ import {
   ProductTypeOrmRepository,
   UserTypeOrmRepository,
 } from './database/repository';
-import { CommandBus } from './listener/register-event.use-case';
+import { CommandBus } from './listener/command.bus';
 
 @Module({
-  imports: [DatabaseModule],
+  imports: [
+    ClientsModule.register([
+      {
+        name: 'BRANCH_RMQ',
+        transport: Transport.RMQ,
+        options: {
+          urls: ['amqp://localhost:5672'],
+          queue: 'BRANCH_QUEUE',
+          queueOptions: {
+            durable: false,
+          },
+        },
+      },
+    ]),
+    DatabaseModule,
+  ],
   providers: [
     {
       provide: RegisterBranchUseCase,
@@ -81,11 +98,18 @@ import { CommandBus } from './listener/register-event.use-case';
     },
     {
       provide: CommandBus,
-      useFactory: (eventRepository: EventMongooseRepository) =>
-        new CommandBus(eventRepository),
-      inject: [EventMongooseRepository],
+      useFactory: (
+        eventRepository: EventMongooseRepository,
+        clientProxy: ClientProxy,
+      ) => new CommandBus(eventRepository, clientProxy),
+      inject: [EventMongooseRepository, 'BRANCH_RMQ'],
     },
   ],
-  controllers: [BranchController, ProductsController, UserController],
+  controllers: [
+    BranchController,
+    ProductsController,
+    UserController,
+    RabbitController,
+  ],
 })
 export class InfrastructureModule {}

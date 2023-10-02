@@ -1,1 +1,1 @@
-export * from './register-event.use-case';
+export * from './command.bus';
