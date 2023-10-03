@@ -10,12 +10,12 @@ import {
   RabbitRegisterProductUseCase,
   RabbitRegisterResellerSaleUseCase,
 } from '@QueryApplication';
-import { Controller } from '@nestjs/common';
-import { EventPattern, Payload } from '@nestjs/microservices';
+import { RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
+import { Injectable } from '@nestjs/common';
 import { Observable } from 'rxjs';
 
-@Controller('api/v1/product')
-export class QueryProductsController {
+@Injectable()
+export class MessagingProductHandler {
   constructor(
     private readonly registerProductUseCase: RabbitRegisterProductUseCase,
     private readonly registerProductInventoryStockUseCase: RabbitRegisterProductInventoryStockUseCase,
@@ -23,27 +23,43 @@ export class QueryProductsController {
     private readonly registerResellerSaleUseCase: RabbitRegisterResellerSaleUseCase,
   ) {}
 
-  @EventPattern('PRODUCT_REGISTERED')
-  registerProduct(@Payload() dto: string): Observable<IProduct> {
+  @RabbitSubscribe({
+    exchange: 'BRANCH_EX_1',
+    routingKey: 'PRODUCT_REGISTERED',
+    queue: 'PRODUCT_REGISTERED',
+  })
+  registerProduct(dto: string): Observable<IProduct> {
     const product: RegisterProductData = JSON.parse(dto);
     return this.registerProductUseCase.execute(product);
   }
 
-  @EventPattern('PRODUCT_INVENTORY_STOCK_REGISTERED')
-  registerProductInventoryStock(@Payload() dto: string): Observable<IProduct> {
+  @RabbitSubscribe({
+    exchange: 'BRANCH_EX_1',
+    routingKey: 'PRODUCT_INVENTORY_STOCK_REGISTERED',
+    queue: 'PRODUCT_INVENTORY_STOCK_REGISTERED',
+  })
+  registerProductInventoryStock(dto: string): Observable<IProduct> {
     const product: RegisterProductInventoryStockData = JSON.parse(dto);
 
     return this.registerProductInventoryStockUseCase.execute(product);
   }
 
-  @EventPattern('PRODUCT_FINAL_CUSTOMER_SALE_REGISTERED')
-  registerFinalCustomerSale(@Payload() dto: string): Observable<IProduct[]> {
+  @RabbitSubscribe({
+    exchange: 'BRANCH_EX_1',
+    routingKey: 'PRODUCT_FINAL_CUSTOMER_SALE_REGISTERED',
+    queue: 'PRODUCT_FINAL_CUSTOMER_SALE_REGISTERED',
+  })
+  registerFinalCustomerSale(dto: string): Observable<IProduct[]> {
     const product: RegisterSaleData = JSON.parse(dto);
     return this.registerFinalCustomerSaleUseCase.execute(product);
   }
 
-  @EventPattern('PRODUCT_RESELLER_SALE_REGISTERED')
-  registerResellerSale(@Payload() dto: string): Observable<IProduct[]> {
+  @RabbitSubscribe({
+    exchange: 'BRANCH_EX_1',
+    routingKey: 'PRODUCT_RESELLER_SALE_REGISTERED',
+    queue: 'PRODUCT_RESELLER_SALE_REGISTERED',
+  })
+  registerResellerSale(dto: string): Observable<IProduct[]> {
     const product: RegisterSaleData = JSON.parse(dto);
     return this.registerResellerSaleUseCase.execute(product);
   }

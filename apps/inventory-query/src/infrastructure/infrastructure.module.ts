@@ -7,12 +7,12 @@ import {
   RabbitRegisterUserUseCase,
 } from '@QueryApplication';
 import {
-  QueryBranchController,
-  QueryProductsController,
-  QueryUserController,
+  MessagingBranchHandler,
+  MessagingProductHandler,
+  MessagingUserHandler,
 } from '@QueryInfrastructure';
+import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
 import { Module } from '@nestjs/common';
-import { ClientsModule } from '@nestjs/microservices';
 import { DatabaseModule } from './database/database.module';
 import {
   BranchTypeOrmRepository,
@@ -21,7 +21,27 @@ import {
 } from './database/repository';
 
 @Module({
-  imports: [ClientsModule, DatabaseModule],
+  imports: [
+    RabbitMQModule.forRoot(RabbitMQModule, {
+      exchanges: [
+        {
+          name: 'BRANCH_EX_1',
+          type: 'topic',
+        },
+        {
+          name: 'BRANCH_EX_2',
+          type: 'direct',
+        },
+        {
+          name: 'BRANCH_EX_3',
+          type: 'fanout',
+        },
+      ],
+
+      uri: 'amqp://localhost:5672',
+    }),
+    DatabaseModule,
+  ],
   providers: [
     {
       provide: RabbitRegisterBranchUseCase,
@@ -64,11 +84,39 @@ import {
         new RabbitRegisterResellerSaleUseCase(productRepository),
       inject: [ProductTypeOrmRepository],
     },
-  ],
-  controllers: [
-    QueryBranchController,
-    QueryProductsController,
-    QueryUserController,
+    {
+      provide: MessagingBranchHandler,
+      useFactory: (rabbitRegisterBranchUseCase: RabbitRegisterBranchUseCase) =>
+        new MessagingBranchHandler(rabbitRegisterBranchUseCase),
+      inject: [RabbitRegisterBranchUseCase],
+    },
+    {
+      provide: MessagingProductHandler,
+      useFactory: (
+        registerProductUseCase: RabbitRegisterProductUseCase,
+        registerProductInventoryStockUseCase: RabbitRegisterProductInventoryStockUseCase,
+        registerFinalCustomerSaleUseCase: RabbitRegisterFinalCustomerSaleUseCase,
+        registerResellerSaleUseCase: RabbitRegisterResellerSaleUseCase,
+      ) =>
+        new MessagingProductHandler(
+          registerProductUseCase,
+          registerProductInventoryStockUseCase,
+          registerFinalCustomerSaleUseCase,
+          registerResellerSaleUseCase,
+        ),
+      inject: [
+        RabbitRegisterProductUseCase,
+        RabbitRegisterProductInventoryStockUseCase,
+        RabbitRegisterFinalCustomerSaleUseCase,
+        RabbitRegisterResellerSaleUseCase,
+      ],
+    },
+    {
+      provide: MessagingUserHandler,
+      useFactory: (registerUserUseCase: RabbitRegisterUserUseCase) =>
+        new MessagingUserHandler(registerUserUseCase),
+      inject: [RabbitRegisterUserUseCase],
+    },
   ],
 })
 export class InfrastructureModule {}

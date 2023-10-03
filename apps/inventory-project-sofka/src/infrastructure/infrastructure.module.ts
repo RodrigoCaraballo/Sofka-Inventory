@@ -6,10 +6,11 @@ import {
   RegisterResellerSaleUseCase,
   RegisterUserUseCase,
 } from '@CommandApplication';
+import { AmqpConnection, RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
 import { Module } from '@nestjs/common';
-import { ClientProxy, ClientsModule, Transport } from '@nestjs/microservices';
 import { CommandBranchController } from './controller/branch.controller';
 import { CommandProductsController } from './controller/product.controller';
+import { RabbitController } from './controller/rabbit.controller';
 import { CommandUserController } from './controller/user.controller';
 import { DatabaseModule } from './database/database.module';
 import { EventMongooseRepository } from './database/repository';
@@ -17,19 +18,23 @@ import { CommandBus } from './listener/command.bus';
 
 @Module({
   imports: [
-    ClientsModule.register([
-      {
-        name: 'BRANCH_RMQ',
-        transport: Transport.RMQ,
-        options: {
-          urls: ['amqp://localhost:5672'],
-          queue: 'BRANCH_QUEUE',
-          queueOptions: {
-            durable: false,
-          },
+    RabbitMQModule.forRoot(RabbitMQModule, {
+      exchanges: [
+        {
+          name: 'BRANCH_EX_1',
+          type: 'topic',
         },
-      },
-    ]),
+        {
+          name: 'BRANCH_EX_2',
+          type: 'direct',
+        },
+        {
+          name: 'BRANCH_EX_3',
+          type: 'fanout',
+        },
+      ],
+      uri: 'amqp://localhost:5672',
+    }),
     DatabaseModule,
   ],
   providers: [
@@ -73,15 +78,16 @@ import { CommandBus } from './listener/command.bus';
       provide: CommandBus,
       useFactory: (
         eventRepository: EventMongooseRepository,
-        clientProxy: ClientProxy,
-      ) => new CommandBus(eventRepository, clientProxy),
-      inject: [EventMongooseRepository, 'BRANCH_RMQ'],
+        amqpConnection: AmqpConnection,
+      ) => new CommandBus(eventRepository, amqpConnection),
+      inject: [EventMongooseRepository, AmqpConnection],
     },
   ],
   controllers: [
     CommandBranchController,
     CommandProductsController,
     CommandUserController,
+    RabbitController,
   ],
 })
 export class InfrastructureModule {}

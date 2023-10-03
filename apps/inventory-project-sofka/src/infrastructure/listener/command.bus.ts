@@ -1,15 +1,11 @@
 import { Command, ICommandBus, IEvent, IEventRepository } from '@Domain';
-import { Inject } from '@nestjs/common';
-import { ClientProxy } from '@nestjs/microservices';
+import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { v4 as uuidv4 } from 'uuid';
 
 export class CommandBus implements ICommandBus {
-  private readonly maxRetries = 3; // Número máximo de reintentos
-  private readonly retryDelay = 5000; // Retardo entre reintentos en milisegundos
-
   constructor(
     private readonly eventRepository: IEventRepository,
-    @Inject('BRANCH_RMQ') private readonly clientProxy: ClientProxy,
+    private readonly amqpConnection: AmqpConnection,
   ) {}
   publish(command: Command): void {
     const newEvent: IEvent = {
@@ -20,7 +16,11 @@ export class CommandBus implements ICommandBus {
       eventPublishedAt: new Date(),
     };
 
-    this.clientProxy.emit(command.eventType, newEvent.eventData);
+    this.amqpConnection.publish(
+      'BRANCH_EX_1',
+      newEvent.eventType,
+      newEvent.eventData,
+    );
 
     this.eventRepository.saveEvent(newEvent);
   }

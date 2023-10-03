@@ -1,17 +1,22 @@
 import { RabbitRegisterUserUseCase } from '@QueryApplication';
-import { Controller } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Observable } from 'rxjs';
 
 import { IUser, RegisterUserData } from '@Domain';
-import { EventPattern, Payload } from '@nestjs/microservices';
+import { RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
+import { Payload } from '@nestjs/microservices';
 
-@Controller('api/v1/user')
-export class QueryUserController {
+@Injectable()
+export class MessagingUserHandler {
   constructor(
     private readonly registerUserUseCase: RabbitRegisterUserUseCase,
   ) {}
 
-  @EventPattern('USER_REGISTERED')
+  @RabbitSubscribe({
+    exchange: 'BRANCH_EX_1',
+    routingKey: 'USER_REGISTERED',
+    queue: 'USER_REGISTERED',
+  })
   registerUser(@Payload() dto: string): Observable<IUser> {
     const user: RegisterUserData = JSON.parse(dto);
     return this.registerUserUseCase.execute(user);
