@@ -28,49 +28,4 @@ export class MessagingBranchHandler {
   subDirect(dto: string): void {
     console.log(`subDirect: ${dto}`);
   }
-
-  @RabbitSubscribe({
-    exchange: 'BRANCH_EX_2',
-    routingKey: 'direct.*',
-    queue: 'directRabbit2',
-  })
-  subDirectDos(dto: string): void {
-    console.log(`subDirect: ${dto}`);
-  }
-
-  @RabbitSubscribe({
-    exchange: 'BRANCH_EX_1',
-    routingKey: 'topic',
-    queue: 'topic',
-  })
-  subTopicOne(dto: string): void {
-    console.log(`subTopicOne: ${dto}`);
-  }
-
-  @RabbitSubscribe({
-    exchange: 'BRANCH_EX_1',
-    routingKey: 'topic.s',
-    queue: 'topic.rabb',
-  })
-  subTopicTwo(dto: string): void {
-    console.log(`subTopicTwo: ${dto}`);
-  }
-
-  @RabbitSubscribe({
-    exchange: 'BRANCH_EX_3',
-    routingKey: 'dsad',
-    queue: 'fanout.one',
-  })
-  subFanOut(dto: string): void {
-    console.log(`subTopicTwo: ${dto}`);
-  }
-
-  @RabbitSubscribe({
-    exchange: 'BRANCH_EX_3',
-    routingKey: 'sas',
-    queue: 'fanout.two',
-  })
-  subFanOutTwo(dto: string): void {
-    console.log(`subFanOutTwo: ${dto}`);
-  }
 }

@@ -28,14 +28,6 @@ import {
           name: 'BRANCH_EX_1',
           type: 'topic',
         },
-        {
-          name: 'BRANCH_EX_2',
-          type: 'direct',
-        },
-        {
-          name: 'BRANCH_EX_3',
-          type: 'fanout',
-        },
       ],
 
       uri: 'amqp://localhost:5672',

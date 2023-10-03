@@ -10,7 +10,6 @@ import { AmqpConnection, RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
 import { Module } from '@nestjs/common';
 import { CommandBranchController } from './controller/branch.controller';
 import { CommandProductsController } from './controller/product.controller';
-import { RabbitController } from './controller/rabbit.controller';
 import { CommandUserController } from './controller/user.controller';
 import { DatabaseModule } from './database/database.module';
 import { EventMongooseRepository } from './database/repository';
@@ -23,14 +22,6 @@ import { CommandBus } from './listener/command.bus';
         {
           name: 'BRANCH_EX_1',
           type: 'topic',
-        },
-        {
-          name: 'BRANCH_EX_2',
-          type: 'direct',
-        },
-        {
-          name: 'BRANCH_EX_3',
-          type: 'fanout',
         },
       ],
       uri: 'amqp://localhost:5672',
@@ -87,7 +78,6 @@ import { CommandBus } from './listener/command.bus';
     CommandBranchController,
     CommandProductsController,
     CommandUserController,
-    RabbitController,
   ],
 })
 export class InfrastructureModule {}
