@@ -1,0 +1,40 @@
+version: '3.14'
+services:
+  inventory-command:
+    build:
+      context: ./
+      dockerfile: Command.Dockerfile
+    ports:
+      - 3000:3000
+    links:
+      - mongo-inventory
+      - rabbitmq-inventory
+  inventory-query:
+    build:
+      context: ./
+      dockerfile: Query.Dockerfile
+    ports:
+      - 3001:3001
+    links:
+      - mysql-inventory
+      - rabbitmq-inventory
+  mongo-inventory:
+    image: mongo
+    ports:
+      - 27017:27017
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=rodri
+      - MONGO_INITDB_ROOT_PASSWORD=rodri007
+      - MONGO_INITDB_DATABASE=inventory
+  mysql-inventory:
+    image: mysql
+    ports:
+      - 3306:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=rodri007
+      - MYSQL_DATABASE=inventory
+  rabbitmq-inventory:
+    image: rabbitmq:3-management
+    ports:
+      - 5672:5672
+      - 15672:15672

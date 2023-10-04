@@ -15,7 +15,7 @@ import { InfrastructureModule } from './infrastructure/infrastructure.module';
     }),
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: '127.0.0.1',
+      host: 'mysql-inventory',
       port: 3306,
       username: 'root',
       password: 'rodri007',
