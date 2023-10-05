@@ -23,6 +23,8 @@ export class RegisterResellerSaleUseCase {
     const productIds = data.products.map((product) => product.id);
     return this.eventRepository.findProducts(data.branchId, productIds).pipe(
       map((productsRegistered: IEvent[]) => {
+        console.log(productsRegistered);
+
         if (!productsRegistered || productsRegistered.length === 0)
           throw new NotFoundException('Product not registered');
 

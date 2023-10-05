@@ -27,12 +27,27 @@ export class EventMongooseRepository implements IEventRepository {
   ): Observable<EventMongooseDocument[]> {
     return from(
       this.eventRepository
-        .find({
-          eventAggregateRootId: branchId,
-          eventType: 'PRODUCT_UPDATED',
-          'eventData.id': { $in: productIds },
-        })
-        .sort({ eventPublishedAt: -1 })
+        .aggregate([
+          {
+            $match: {
+              eventAggregateRootId: branchId,
+              eventType: 'PRODUCT_UPDATED',
+              'eventData.id': { $in: productIds },
+            },
+          },
+          {
+            $sort: { eventPublishedAt: -1 },
+          },
+          {
+            $group: {
+              _id: '$eventData.id',
+              latestEvent: { $first: '$$ROOT' },
+            },
+          },
+          {
+            $replaceRoot: { newRoot: '$latestEvent' },
+          },
+        ])
         .exec(),
     );
   }
