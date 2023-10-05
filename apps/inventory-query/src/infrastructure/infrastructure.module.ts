@@ -2,6 +2,7 @@ import {
   RabbitRegisterBranchUseCase,
   RabbitRegisterFinalCustomerSaleUseCase,
   RabbitRegisterProductInventoryStockUseCase,
+  RabbitRegisterProductUpdateUseCase,
   RabbitRegisterProductUseCase,
   RabbitRegisterResellerSaleUseCase,
   RabbitRegisterUserUseCase,
@@ -17,6 +18,7 @@ import { DatabaseModule } from './database/database.module';
 import {
   BranchTypeOrmRepository,
   ProductTypeOrmRepository,
+  SaleTypeOrmRepository,
   UserTypeOrmRepository,
 } from './database/repository';
 
@@ -66,14 +68,29 @@ import {
     },
     {
       provide: RabbitRegisterFinalCustomerSaleUseCase,
-      useFactory: (productRepository: ProductTypeOrmRepository) =>
-        new RabbitRegisterFinalCustomerSaleUseCase(productRepository),
-      inject: [ProductTypeOrmRepository],
+      useFactory: (
+        branchRepository: BranchTypeOrmRepository,
+        saleRepository: SaleTypeOrmRepository,
+      ) =>
+        new RabbitRegisterFinalCustomerSaleUseCase(
+          branchRepository,
+          saleRepository,
+        ),
+      inject: [BranchTypeOrmRepository, SaleTypeOrmRepository],
     },
     {
       provide: RabbitRegisterResellerSaleUseCase,
+      useFactory: (
+        branchRepository: BranchTypeOrmRepository,
+        saleRepository: SaleTypeOrmRepository,
+      ) =>
+        new RabbitRegisterResellerSaleUseCase(branchRepository, saleRepository),
+      inject: [BranchTypeOrmRepository, SaleTypeOrmRepository],
+    },
+    {
+      provide: RabbitRegisterProductUpdateUseCase,
       useFactory: (productRepository: ProductTypeOrmRepository) =>
-        new RabbitRegisterResellerSaleUseCase(productRepository),
+        new RabbitRegisterProductUpdateUseCase(productRepository),
       inject: [ProductTypeOrmRepository],
     },
     {
@@ -89,18 +106,21 @@ import {
         registerProductInventoryStockUseCase: RabbitRegisterProductInventoryStockUseCase,
         registerFinalCustomerSaleUseCase: RabbitRegisterFinalCustomerSaleUseCase,
         registerResellerSaleUseCase: RabbitRegisterResellerSaleUseCase,
+        registerProductUpdateUseCase: RabbitRegisterProductUpdateUseCase,
       ) =>
         new MessagingProductHandler(
           registerProductUseCase,
           registerProductInventoryStockUseCase,
           registerFinalCustomerSaleUseCase,
           registerResellerSaleUseCase,
+          registerProductUpdateUseCase,
         ),
       inject: [
         RabbitRegisterProductUseCase,
         RabbitRegisterProductInventoryStockUseCase,
         RabbitRegisterFinalCustomerSaleUseCase,
         RabbitRegisterResellerSaleUseCase,
+        RabbitRegisterProductUpdateUseCase,
       ],
     },
     {

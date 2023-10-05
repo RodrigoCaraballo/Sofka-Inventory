@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import {
   BranchTypeOrmEntity,
   ProductTypeOrmEntity,
+  SaleTypeOrmEntity,
   UserTypeOrmEntity,
 } from './infrastructure/database';
 import { InfrastructureModule } from './infrastructure/infrastructure.module';
@@ -20,7 +21,12 @@ import { InfrastructureModule } from './infrastructure/infrastructure.module';
       username: process.env.MYSQL_DB_USER,
       password: process.env.MYSQL_DB_PASSWORD,
       database: process.env.MYSQL_DB_DATABASE,
-      entities: [BranchTypeOrmEntity, UserTypeOrmEntity, ProductTypeOrmEntity],
+      entities: [
+        BranchTypeOrmEntity,
+        UserTypeOrmEntity,
+        ProductTypeOrmEntity,
+        SaleTypeOrmEntity,
+      ],
       synchronize: true,
     }),
     InfrastructureModule,

@@ -31,6 +31,8 @@ export class RegisterProductInventoryStockUseCase {
           productParsed.inventoryStock =
             productParsed.inventoryStock + data.product.inventoryStock;
 
+          console.log(productParsed.inventoryStock);
+
           this.emitInventoryStock(data);
           this.emitProductUpdate(productParsed);
           return { statusCode: 200, success: true };

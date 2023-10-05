@@ -1,10 +1,7 @@
-import { IBranch } from './branch.interface';
-
-export interface ISale {
+export interface RegisterSalesData {
   id?: string;
-  branch?: IBranch;
+  branchId: string;
   invoiceNumber: string;
-  type?: string;
   productName: string;
   productPrice: number;
   quantity: number;

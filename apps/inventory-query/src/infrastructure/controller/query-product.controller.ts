@@ -2,10 +2,12 @@ import {
   IProduct,
   RegisterProductData,
   RegisterProductInventoryStockData,
+  RegisterSalesData,
 } from '@Domain';
 import {
   RabbitRegisterFinalCustomerSaleUseCase,
   RabbitRegisterProductInventoryStockUseCase,
+  RabbitRegisterProductUpdateUseCase,
   RabbitRegisterProductUseCase,
   RabbitRegisterResellerSaleUseCase,
 } from '@QueryApplication';
@@ -20,6 +22,7 @@ export class MessagingProductHandler {
     private readonly registerProductInventoryStockUseCase: RabbitRegisterProductInventoryStockUseCase,
     private readonly registerFinalCustomerSaleUseCase: RabbitRegisterFinalCustomerSaleUseCase,
     private readonly registerResellerSaleUseCase: RabbitRegisterResellerSaleUseCase,
+    private readonly registerProductUpdateUseCase: RabbitRegisterProductUpdateUseCase,
   ) {}
 
   @RabbitSubscribe({
@@ -49,8 +52,8 @@ export class MessagingProductHandler {
     routingKey: 'PRODUCT_FINAL_CUSTOMER_SALE_REGISTERED',
     queue: 'PRODUCT_FINAL_CUSTOMER_SALE_REGISTERED',
   })
-  registerFinalCustomerSale(dto: string): Observable<IProduct> {
-    const product: RegisterProductData = JSON.parse(dto);
+  registerFinalCustomerSale(dto: string): Observable<IProduct[]> {
+    const product: RegisterSalesData[] = JSON.parse(dto);
     return this.registerFinalCustomerSaleUseCase.execute(product);
   }
 
@@ -59,8 +62,18 @@ export class MessagingProductHandler {
     routingKey: 'PRODUCT_RESELLER_SALE_REGISTERED',
     queue: 'PRODUCT_RESELLER_SALE_REGISTERED',
   })
-  registerResellerSale(dto: string): Observable<IProduct> {
-    const product: RegisterProductData = JSON.parse(dto);
+  registerResellerSale(dto: string): Observable<IProduct[]> {
+    const product: RegisterSalesData[] = JSON.parse(dto);
     return this.registerResellerSaleUseCase.execute(product);
+  }
+
+  @RabbitSubscribe({
+    exchange: 'BRANCH_EX_1',
+    routingKey: 'PRODUCT_UPDATED',
+    queue: 'PRODUCT_UPDATED',
+  })
+  registerProductUpdate(dto: string): Observable<IProduct> {
+    const product: RegisterProductData = JSON.parse(dto);
+    return this.registerProductUpdateUseCase.execute(product);
   }
 }

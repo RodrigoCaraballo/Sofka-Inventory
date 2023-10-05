@@ -8,6 +8,7 @@ import {
   RegisterProductData,
   RegisterProductUpdated,
   RegisterSaleData,
+  RegisterSalesData,
   SaleEntity,
 } from '@Domain';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
@@ -53,12 +54,13 @@ export class RegisterFinalCustomerSaleUseCase {
           if (!productDTO)
             throw new BadRequestException('Product inventory is not enough');
           return {
+            invoiceNumber: data.invoiceNumber,
             productName: productUpdated.name,
             productPrice: productUpdated.price,
             quantity: productDTO.inventoryStock,
           };
         });
-        const newSales = this.validateEntity(productsSale);
+        const newSales = this.validateEntity(productsSale, data.branchId);
 
         this.emitProductSale(newSales, data.branchId);
         this.emitProductUpdate(productsUpdated);
@@ -67,7 +69,7 @@ export class RegisterFinalCustomerSaleUseCase {
     );
   }
 
-  private emitProductSale(datas: ISale[], branchId: string): void {
+  private emitProductSale(datas: RegisterSalesData[], branchId: string): void {
     this.commandBus.publish(
       new RegisterFinalCustomerSaleCommand(branchId, JSON.stringify(datas)),
     );
@@ -81,12 +83,17 @@ export class RegisterFinalCustomerSaleUseCase {
     });
   }
 
-  private validateEntity(datas: ISale[]): ISale[] {
+  private validateEntity(
+    datas: ISale[],
+    branchId: string,
+  ): RegisterSalesData[] {
     return datas.map((data) => {
       const newProduct = new SaleEntity(data);
 
       return {
         id: newProduct.id.valueOf(),
+        branchId: branchId,
+        invoiceNumber: data.invoiceNumber.valueOf(),
         productName: newProduct.productName.valueOf(),
         productPrice: newProduct.productPrice.valueOf(),
         quantity: newProduct.quantity.valueOf(),

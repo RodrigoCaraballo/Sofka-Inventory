@@ -7,7 +7,7 @@ import {
 } from 'typeorm';
 import { BranchTypeOrmEntity } from './branch.typeorm.entity';
 
-@Entity()
+@Entity('Sale')
 export class SaleTypeOrmEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -18,6 +18,12 @@ export class SaleTypeOrmEntity {
   )
   @JoinColumn()
   branch: BranchTypeOrmEntity;
+
+  @Column()
+  invoiceNumber: string;
+
+  @Column()
+  type: string;
 
   @Column()
   productName: string;

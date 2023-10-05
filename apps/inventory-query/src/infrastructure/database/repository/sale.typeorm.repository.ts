@@ -10,7 +10,7 @@ export class SaleTypeOrmRepository implements ISaleRepository {
     private readonly saleRepository: Repository<SaleTypeOrmEntity>,
   ) {}
 
-  saveSale(sale: ISale): Observable<ISale> {
-    return from(this.saleRepository.save(sale));
+  saveSales(sales: ISale[]): Observable<ISale[]> {
+    return from(this.saleRepository.save(sales));
   }
 }

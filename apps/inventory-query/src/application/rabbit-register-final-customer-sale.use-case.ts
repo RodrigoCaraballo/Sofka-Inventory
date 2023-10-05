@@ -1,25 +1,37 @@
 import { Observable, switchMap } from 'rxjs';
 
-import { IProduct, IProductRepository, RegisterProductData } from '@Domain';
+import {
+  IBranch,
+  IBranchRepository,
+  ISale,
+  ISaleRepository,
+  RegisterSalesData,
+} from '@Domain';
 
 export class RabbitRegisterFinalCustomerSaleUseCase {
-  constructor(private readonly productRepository: IProductRepository) {}
+  constructor(
+    private readonly branchRepository: IBranchRepository,
+    private readonly saleRepository: ISaleRepository,
+  ) {}
 
-  execute(data: RegisterProductData): Observable<IProduct> {
-    const dbProduct = this.getProduct(data);
-    return dbProduct.pipe(
-      switchMap((product: IProduct) => {
-        product.inventoryStock = data.inventoryStock;
-        return this.saveProducts(product);
+  execute(datas: RegisterSalesData[]): Observable<ISale[]> {
+    return this.branchRepository.findBranchById(datas[0].branchId).pipe(
+      switchMap((branch: IBranch) => {
+        const newSales: ISale[] = datas.map((data) => ({
+          id: data.id,
+          branch: branch,
+          invoiceNumber: data.invoiceNumber,
+          type: 'FINAL CUSTOMER',
+          productName: data.productName,
+          productPrice: data.productPrice,
+          quantity: data.quantity,
+        }));
+        return this.saveProducts(newSales);
       }),
     );
   }
 
-  private getProduct(data: RegisterProductData): Observable<IProduct> {
-    return this.productRepository.findProductById(data.id);
-  }
-
-  private saveProducts(product: IProduct): Observable<IProduct> {
-    return this.productRepository.saveProduct(product);
+  private saveProducts(sales: ISale[]): Observable<ISale[]> {
+    return this.saleRepository.saveSales(sales);
   }
 }

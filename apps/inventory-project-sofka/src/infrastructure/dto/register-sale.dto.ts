@@ -5,5 +5,6 @@ type ProductSale = {
 
 export interface RegisterSaleDTO {
   branchId: string;
+  invoiceNumber: string;
   products: ProductSale[];
 }

@@ -8,6 +8,7 @@ import {
   RegisterProductResellerSaleCommand,
   RegisterProductUpdated,
   RegisterSaleData,
+  RegisterSalesData,
   SaleEntity,
 } from '@Domain';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
@@ -23,8 +24,6 @@ export class RegisterResellerSaleUseCase {
     const productIds = data.products.map((product) => product.id);
     return this.eventRepository.findProducts(data.branchId, productIds).pipe(
       map((productsRegistered: IEvent[]) => {
-        console.log(productsRegistered);
-
         if (!productsRegistered || productsRegistered.length === 0)
           throw new NotFoundException('Product not registered');
 
@@ -55,12 +54,13 @@ export class RegisterResellerSaleUseCase {
           if (!productDTO)
             throw new BadRequestException('Product inventory is not enough');
           return {
+            invoiceNumber: data.invoiceNumber,
             productName: productUpdated.name,
-            productPrice: productUpdated.price,
+            productPrice: productUpdated.price * 0.9,
             quantity: productDTO.inventoryStock,
           };
         });
-        const newSales = this.validateEntity(productsSale);
+        const newSales = this.validateEntity(productsSale, data.branchId);
 
         this.emitProductSale(newSales, data.branchId);
         this.emitProductUpdate(productsUpdated);
@@ -69,7 +69,7 @@ export class RegisterResellerSaleUseCase {
     );
   }
 
-  private emitProductSale(datas: ISale[], branchId: string): void {
+  private emitProductSale(datas: RegisterSalesData[], branchId: string): void {
     this.commandBus.publish(
       new RegisterProductResellerSaleCommand(branchId, JSON.stringify(datas)),
     );
@@ -83,12 +83,17 @@ export class RegisterResellerSaleUseCase {
     });
   }
 
-  private validateEntity(datas: ISale[]): ISale[] {
+  private validateEntity(
+    datas: ISale[],
+    branchId: string,
+  ): RegisterSalesData[] {
     return datas.map((data) => {
       const newProduct = new SaleEntity(data);
 
       return {
         id: newProduct.id.valueOf(),
+        branchId: branchId,
+        invoiceNumber: data.invoiceNumber.valueOf(),
         productName: newProduct.productName.valueOf(),
         productPrice: newProduct.productPrice.valueOf(),
         quantity: newProduct.quantity.valueOf(),

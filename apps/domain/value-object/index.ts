@@ -1,5 +1,6 @@
 export * from './branch-location.value-object';
 export * from './branch-name.value-object';
+export * from './invoice-number.value-object';
 export * from './product-category.value-object';
 export * from './product-description.value-object';
 export * from './product-inventory-stock.value-object';
