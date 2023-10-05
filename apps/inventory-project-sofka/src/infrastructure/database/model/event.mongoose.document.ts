@@ -1,18 +1,19 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
+import mongoose, { HydratedDocument } from 'mongoose';
+import { IEvent } from '../../../../../domain/interfaces';
 
-export type EventMongooseDocuement = HydratedDocument<EventMongoose>;
+export type EventMongooseDocument = HydratedDocument<EventMongoose>;
 
 @Schema()
-export class EventMongoose {
+export class EventMongoose implements IEvent {
   @Prop()
   eventType: string;
 
   @Prop()
   eventAggregateRootId: string;
 
-  @Prop()
-  eventData: string;
+  @Prop({ type: mongoose.Schema.Types.Mixed })
+  eventData: Record<string, any>;
 
   @Prop()
   eventPublishedAt: Date;

@@ -8,9 +8,7 @@ import { InfrastructureModule } from './infrastructure/infrastructure.module';
     ConfigModule.forRoot({
       envFilePath: '.env',
     }),
-    MongooseModule.forRoot(
-      'mongodb://rodri:rodri007@mongo-inventory:27017/inventory?authSource=admin',
-    ),
+    MongooseModule.forRoot(process.env.MONGO_DB_URI),
     InfrastructureModule,
   ],
 })

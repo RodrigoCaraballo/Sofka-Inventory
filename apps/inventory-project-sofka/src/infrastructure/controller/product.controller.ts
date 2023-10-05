@@ -9,7 +9,9 @@ import {
   RegisterProductInventoryStockDTO,
   RegisterSaleDTO,
 } from '@CommandInfrastructure';
+import { CommandResponse } from '@Domain';
 import { Body, Controller, Post } from '@nestjs/common';
+import { Observable } from 'rxjs';
 
 @Controller('api/v1/product')
 export class CommandProductsController {
@@ -21,24 +23,30 @@ export class CommandProductsController {
   ) {}
 
   @Post('/register')
-  registerProduct(@Body() dto: RegisterProductDTO): void {
-    this.registerProductUseCase.execute(dto);
+  registerProduct(
+    @Body() dto: RegisterProductDTO,
+  ): Observable<CommandResponse> {
+    return this.registerProductUseCase.execute(dto);
   }
 
   @Post('/purchase')
   registerProductInventoryStock(
     @Body() dto: RegisterProductInventoryStockDTO,
-  ): void {
-    this.registerProductInventoryStockUseCase.execute(dto);
+  ): Observable<CommandResponse> {
+    return this.registerProductInventoryStockUseCase.execute(dto);
   }
 
   @Post('/customer-sale')
-  registerFinalCustomerSale(@Body() dto: RegisterSaleDTO): void {
-    this.registerFinalCustomerSaleUseCase.execute(dto);
+  registerFinalCustomerSale(
+    @Body() dto: RegisterSaleDTO,
+  ): Observable<CommandResponse> {
+    return this.registerFinalCustomerSaleUseCase.execute(dto);
   }
 
   @Post('/reseller-sale')
-  registerResellerSale(@Body() dto: RegisterSaleDTO): void {
-    this.registerResellerSaleUseCase.execute(dto);
+  registerResellerSale(
+    @Body() dto: RegisterSaleDTO,
+  ): Observable<CommandResponse> {
+    return this.registerResellerSaleUseCase.execute(dto);
   }
 }

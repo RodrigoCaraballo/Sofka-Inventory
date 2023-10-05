@@ -1,7 +1,7 @@
 export interface IEvent {
-  eventId: string;
+  eventId?: string;
   eventAggregateRootId: string;
   eventType: string;
-  eventData: string;
+  eventData: Record<string, any>;
   eventPublishedAt: Date;
 }

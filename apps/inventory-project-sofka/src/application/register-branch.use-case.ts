@@ -1,19 +1,34 @@
 import {
   BranchEntity,
+  CommandResponse,
   IBranch,
   ICommandBus,
+  IEvent,
+  IEventRepository,
   RegisterBranchCommand,
   RegisterBranchData,
 } from '@Domain';
+import { BadRequestException } from '@nestjs/common';
+import { Observable, map } from 'rxjs';
 
 export class RegisterBranchUseCase {
-  constructor(private readonly commandBus: ICommandBus) {}
+  constructor(
+    private readonly eventRepository: IEventRepository,
+    private readonly commandBus: ICommandBus,
+  ) {}
 
-  execute(data: RegisterBranchData): void {
-    const branch = this.validateEntity(data);
+  execute(data: RegisterBranchData): Observable<CommandResponse> {
+    return this.eventRepository.existBranch(data).pipe(
+      map((event: IEvent) => {
+        if (event) throw new BadRequestException('Branch already exists');
+        const branch = this.validateEntity(data);
 
-    this.commandBus.publish(
-      new RegisterBranchCommand(branch.id, JSON.stringify(data)),
+        this.commandBus.publish(
+          new RegisterBranchCommand(branch.id, JSON.stringify(data)),
+        );
+
+        return { statusCode: 200, success: true };
+      }),
     );
   }
 

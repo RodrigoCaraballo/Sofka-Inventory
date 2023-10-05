@@ -3,7 +3,6 @@ import {
   IBranchRepository,
   IProduct,
   IProductRepository,
-  ProductEntity,
   RegisterProductData,
 } from '@Domain';
 import { Observable, switchMap } from 'rxjs';
@@ -17,8 +16,16 @@ export class RabbitRegisterProductUseCase {
   execute(data: RegisterProductData): Observable<IProduct> {
     return this.branchRepository.findBranchById(data.branchId).pipe(
       switchMap((branch: IBranch) => {
-        const product = this.validateEntity(data, branch);
-        return this.saveProduct(product, branch);
+        return this.saveProduct(
+          {
+            id: data.id,
+            name: data.name,
+            description: data.description,
+            price: data.price,
+            category: data.category,
+          },
+          branch,
+        );
       }),
     );
   }
@@ -36,26 +43,5 @@ export class RabbitRegisterProductUseCase {
       category: product.category,
       branch: branch,
     });
-  }
-
-  private validateEntity(data: RegisterProductData, branch: IBranch): IProduct {
-    const newProduct = new ProductEntity({
-      name: data.name,
-      description: data.description,
-      price: data.price,
-      inventoryStock: 0,
-      category: data.category,
-      branch: branch,
-    });
-
-    return {
-      id: newProduct.id.valueOf(),
-      name: newProduct.name.valueOf(),
-      description: newProduct.description.valueOf(),
-      price: newProduct.price.valueOf(),
-      inventoryStock: newProduct.inventoryStock.valueOf(),
-      category: newProduct.category.valueOf(),
-      branch: branch,
-    };
   }
 }

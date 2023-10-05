@@ -1,9 +1,4 @@
-import {
-  IProduct,
-  RegisterProductData,
-  RegisterProductInventoryStockData,
-  RegisterSaleData,
-} from '@Domain';
+import { IProduct, RegisterProductData } from '@Domain';
 import {
   RabbitRegisterFinalCustomerSaleUseCase,
   RabbitRegisterProductInventoryStockUseCase,
@@ -30,6 +25,7 @@ export class MessagingProductHandler {
   })
   registerProduct(dto: string): Observable<IProduct> {
     const product: RegisterProductData = JSON.parse(dto);
+
     return this.registerProductUseCase.execute(product);
   }
 
@@ -39,7 +35,7 @@ export class MessagingProductHandler {
     queue: 'PRODUCT_INVENTORY_STOCK_REGISTERED',
   })
   registerProductInventoryStock(dto: string): Observable<IProduct> {
-    const product: RegisterProductInventoryStockData = JSON.parse(dto);
+    const product: RegisterProductData = JSON.parse(dto);
 
     return this.registerProductInventoryStockUseCase.execute(product);
   }
@@ -49,8 +45,8 @@ export class MessagingProductHandler {
     routingKey: 'PRODUCT_FINAL_CUSTOMER_SALE_REGISTERED',
     queue: 'PRODUCT_FINAL_CUSTOMER_SALE_REGISTERED',
   })
-  registerFinalCustomerSale(dto: string): Observable<IProduct[]> {
-    const product: RegisterSaleData = JSON.parse(dto);
+  registerFinalCustomerSale(dto: string): Observable<IProduct> {
+    const product: RegisterProductData = JSON.parse(dto);
     return this.registerFinalCustomerSaleUseCase.execute(product);
   }
 
@@ -59,8 +55,8 @@ export class MessagingProductHandler {
     routingKey: 'PRODUCT_RESELLER_SALE_REGISTERED',
     queue: 'PRODUCT_RESELLER_SALE_REGISTERED',
   })
-  registerResellerSale(dto: string): Observable<IProduct[]> {
-    const product: RegisterSaleData = JSON.parse(dto);
+  registerResellerSale(dto: string): Observable<IProduct> {
+    const product: RegisterProductData = JSON.parse(dto);
     return this.registerResellerSaleUseCase.execute(product);
   }
 }

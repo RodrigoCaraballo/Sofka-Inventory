@@ -5,5 +5,6 @@ type ProductSale = {
 
 export interface RegisterSaleData {
   branchId: string;
-  products: ProductSale[];
+  id: string;
+  inventoryStock: number;
 }

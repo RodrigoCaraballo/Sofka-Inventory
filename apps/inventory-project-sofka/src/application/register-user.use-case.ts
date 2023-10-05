@@ -1,16 +1,31 @@
 import {
+  CommandResponse,
   ICommandBus,
+  IEvent,
+  IEventRepository,
   RegisterUserCommand,
   RegisterUserData,
   UserEntity,
 } from '@Domain';
+import { BadRequestException } from '@nestjs/common';
+import { Observable, map } from 'rxjs';
 
 export class RegisterUserUseCase {
-  constructor(private readonly commandBus: ICommandBus) {}
+  constructor(
+    private readonly eventRepository: IEventRepository,
+    private readonly commandBus: ICommandBus,
+  ) {}
 
-  execute(data: RegisterUserData): void {
-    this.validateEntity(data);
-    this.emitCommand(data);
+  execute(data: RegisterUserData): Observable<CommandResponse> {
+    return this.eventRepository.existUser(data).pipe(
+      map((userRegistered: IEvent) => {
+        if (userRegistered)
+          throw new BadRequestException('Email already registered');
+        this.validateEntity(data);
+        this.emitCommand(data);
+        return { statusCode: 200, success: true };
+      }),
+    );
   }
 
   private emitCommand(data: RegisterUserData): void {

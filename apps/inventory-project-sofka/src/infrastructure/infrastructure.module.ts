@@ -23,55 +23,60 @@ import { CommandBus } from './listener/command.bus';
           name: 'BRANCH_EX_1',
           type: 'topic',
         },
-        {
-          name: 'BRANCH_EX_2',
-          type: 'direct',
-        },
-        {
-          name: 'BRANCH_EX_3',
-          type: 'fanout',
-        },
       ],
-      uri: 'amqp://rabbitmq-inventory:5672',
+      uri: process.env.RABBIT_MQ_URI || 'amqp://127.0.0.1:5672',
     }),
     DatabaseModule,
   ],
   providers: [
     {
       provide: RegisterBranchUseCase,
-      useFactory: (commandBus: CommandBus) =>
-        new RegisterBranchUseCase(commandBus),
-      inject: [CommandBus],
+      useFactory: (
+        eventRepository: EventMongooseRepository,
+        commandBus: CommandBus,
+      ) => new RegisterBranchUseCase(eventRepository, commandBus),
+      inject: [EventMongooseRepository, CommandBus],
     },
     {
       provide: RegisterUserUseCase,
-      useFactory: (commandBus: CommandBus) =>
-        new RegisterUserUseCase(commandBus),
-      inject: [CommandBus],
+      useFactory: (
+        eventRepository: EventMongooseRepository,
+        commandBus: CommandBus,
+      ) => new RegisterUserUseCase(eventRepository, commandBus),
+      inject: [EventMongooseRepository, CommandBus],
     },
     {
       provide: RegisterProductUseCase,
-      useFactory: (commandBus: CommandBus) =>
-        new RegisterProductUseCase(commandBus),
-      inject: [CommandBus],
+      useFactory: (
+        eventRepository: EventMongooseRepository,
+        commandBus: CommandBus,
+      ) => new RegisterProductUseCase(eventRepository, commandBus),
+      inject: [EventMongooseRepository, CommandBus],
     },
     {
       provide: RegisterProductInventoryStockUseCase,
-      useFactory: (commandBus: CommandBus) =>
-        new RegisterProductInventoryStockUseCase(commandBus),
-      inject: [CommandBus],
+      useFactory: (
+        eventRepository: EventMongooseRepository,
+        commandBus: CommandBus,
+      ) =>
+        new RegisterProductInventoryStockUseCase(eventRepository, commandBus),
+      inject: [EventMongooseRepository, CommandBus],
     },
     {
       provide: RegisterFinalCustomerSaleUseCase,
-      useFactory: (commandBus: CommandBus) =>
-        new RegisterFinalCustomerSaleUseCase(commandBus),
-      inject: [CommandBus],
+      useFactory: (
+        eventRepository: EventMongooseRepository,
+        commandBus: CommandBus,
+      ) => new RegisterFinalCustomerSaleUseCase(eventRepository, commandBus),
+      inject: [EventMongooseRepository, CommandBus],
     },
     {
       provide: RegisterResellerSaleUseCase,
-      useFactory: (commandBus: CommandBus) =>
-        new RegisterResellerSaleUseCase(commandBus),
-      inject: [CommandBus],
+      useFactory: (
+        eventRepository: EventMongooseRepository,
+        commandBus: CommandBus,
+      ) => new RegisterResellerSaleUseCase(eventRepository, commandBus),
+      inject: [EventMongooseRepository, CommandBus],
     },
     {
       provide: CommandBus,

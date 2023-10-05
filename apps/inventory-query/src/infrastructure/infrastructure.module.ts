@@ -28,17 +28,9 @@ import {
           name: 'BRANCH_EX_1',
           type: 'topic',
         },
-        {
-          name: 'BRANCH_EX_2',
-          type: 'direct',
-        },
-        {
-          name: 'BRANCH_EX_3',
-          type: 'fanout',
-        },
       ],
 
-      uri: 'amqp://rabbitmq-inventory:5672',
+      uri: process.env.RABBIT_MQ_URI || 'amqp://localhost:5672',
     }),
     DatabaseModule,
   ],

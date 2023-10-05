@@ -27,6 +27,15 @@
       "compilerOptions": {
         "tsConfigPath": "apps/inventory-query/tsconfig.app.json"
       }
+    },
+    "web-socket": {
+      "type": "application",
+      "root": "apps/web-socket",
+      "entryFile": "main",
+      "sourceRoot": "apps/web-socket/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/web-socket/tsconfig.app.json"
+      }
     }
   }
 }

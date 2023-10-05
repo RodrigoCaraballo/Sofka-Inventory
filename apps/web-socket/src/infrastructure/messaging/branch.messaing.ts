@@ -1,22 +1,19 @@
 import { RegisterBranchData } from '@Domain';
-import { RabbitRegisterBranchUseCase } from '@QueryApplication';
 import { RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class MessagingBranchHandler {
-  constructor(
-    private readonly registerBranchUseCase: RabbitRegisterBranchUseCase,
-  ) {}
+  constructor() {}
 
   @RabbitSubscribe({
     exchange: 'BRANCH_EX_1',
     routingKey: 'BRANCH_REGISTERED',
-    queue: 'BRANCH_REGISTERED',
+    queue: 'BRANCH_REGISTERED_WS',
   })
-  registerBranch(dto: string): void {
+  registerBranchEvent(dto: string): void {
     const branch: RegisterBranchData = JSON.parse(dto);
 
-    this.registerBranchUseCase.execute(branch);
+    console.log(branch);
   }
 }

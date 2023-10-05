@@ -1,20 +1,36 @@
 import {
+  CommandResponse,
   ICommandBus,
+  IEvent,
+  IEventRepository,
   ProductEntity,
   RegisterProductCommand,
   RegisterProductData,
 } from '@Domain';
+import { BadRequestException } from '@nestjs/common';
+import { Observable, map } from 'rxjs';
 
 export class RegisterProductUseCase {
-  constructor(private readonly commandBus: ICommandBus) {}
+  constructor(
+    private readonly eventRepository: IEventRepository,
+    private readonly commandBus: ICommandBus,
+  ) {}
 
-  execute(data: RegisterProductData): void {
-    this.validateEntity(data);
-    this.emitCommand(data);
+  execute(data: RegisterProductData): Observable<CommandResponse> {
+    return this.eventRepository.existProduct(data).pipe(
+      map((productRegistered: IEvent) => {
+        if (productRegistered)
+          throw new BadRequestException('Product is already registered');
+        this.emitCommand(data);
+        return { statusCode: 200, success: true };
+      }),
+    );
   }
 
   private emitCommand(data: RegisterProductData): void {
     const newProduct = this.validateEntity(data);
+    console.log(newProduct);
+
     this.commandBus.publish(
       new RegisterProductCommand(data.branchId, JSON.stringify(newProduct)),
     );
@@ -34,7 +50,7 @@ export class RegisterProductUseCase {
       name: newProduct.name.valueOf(),
       description: newProduct.description.valueOf(),
       price: newProduct.price.valueOf(),
-      inventoryStock: newProduct.inventoryStock.valueOf(),
+      inventoryStock: 0,
       category: newProduct.category.valueOf(),
       branchId: data.branchId,
     };

@@ -12,14 +12,14 @@ export class CommandBus implements ICommandBus {
       eventId: uuidv4(),
       eventAggregateRootId: command.eventAggregateRootId,
       eventType: command.eventType,
-      eventData: command.eventData,
+      eventData: JSON.parse(command.eventData),
       eventPublishedAt: new Date(),
     };
 
     this.amqpConnection.publish(
       'BRANCH_EX_1',
       newEvent.eventType,
-      newEvent.eventData,
+      command.eventData,
     );
 
     this.eventRepository.saveEvent(newEvent);
