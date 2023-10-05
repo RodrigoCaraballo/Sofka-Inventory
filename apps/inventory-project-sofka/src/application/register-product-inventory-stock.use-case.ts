@@ -6,6 +6,7 @@ import {
   RegisterProductData,
   RegisterProductInventoryStockCommand,
   RegisterProductInventoryStockData,
+  RegisterProductUpdated,
 } from '@Domain';
 import { NotFoundException } from '@nestjs/common';
 import { Observable, map } from 'rxjs';
@@ -23,8 +24,6 @@ export class RegisterProductInventoryStockUseCase {
       .findProduct(data.branchId, data.product.id)
       .pipe(
         map((productEvent: IEvent) => {
-          console.log(productEvent);
-
           if (!productEvent) throw new NotFoundException('Product not found');
           const productParsed: RegisterProductData =
             productEvent.eventData as RegisterProductData;
@@ -32,18 +31,25 @@ export class RegisterProductInventoryStockUseCase {
           productParsed.inventoryStock =
             productParsed.inventoryStock + data.product.inventoryStock;
 
-          this.emitCommand(productParsed);
+          this.emitInventoryStock(data);
+          this.emitProductUpdate(productParsed);
           return { statusCode: 200, success: true };
         }),
       );
   }
 
-  private emitCommand(data: RegisterProductData): void {
+  private emitInventoryStock(data: RegisterProductInventoryStockData): void {
     this.commandBus.publish(
       new RegisterProductInventoryStockCommand(
         data.branchId,
         JSON.stringify(data),
       ),
+    );
+  }
+
+  private emitProductUpdate(data: RegisterProductData): void {
+    this.commandBus.publish(
+      new RegisterProductUpdated(data.branchId, JSON.stringify(data)),
     );
   }
 }

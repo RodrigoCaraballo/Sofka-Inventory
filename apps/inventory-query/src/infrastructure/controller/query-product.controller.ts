@@ -1,4 +1,8 @@
-import { IProduct, RegisterProductData } from '@Domain';
+import {
+  IProduct,
+  RegisterProductData,
+  RegisterProductInventoryStockData,
+} from '@Domain';
 import {
   RabbitRegisterFinalCustomerSaleUseCase,
   RabbitRegisterProductInventoryStockUseCase,
@@ -35,7 +39,7 @@ export class MessagingProductHandler {
     queue: 'PRODUCT_INVENTORY_STOCK_REGISTERED',
   })
   registerProductInventoryStock(dto: string): Observable<IProduct> {
-    const product: RegisterProductData = JSON.parse(dto);
+    const product: RegisterProductInventoryStockData = JSON.parse(dto);
 
     return this.registerProductInventoryStockUseCase.execute(product);
   }

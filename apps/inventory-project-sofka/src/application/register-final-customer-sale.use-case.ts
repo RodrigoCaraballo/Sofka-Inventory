@@ -3,9 +3,12 @@ import {
   ICommandBus,
   IEvent,
   IEventRepository,
+  ISale,
   RegisterFinalCustomerSaleCommand,
   RegisterProductData,
+  RegisterProductUpdated,
   RegisterSaleData,
+  SaleEntity,
 } from '@Domain';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { Observable, map } from 'rxjs';
@@ -17,29 +20,77 @@ export class RegisterFinalCustomerSaleUseCase {
   ) {}
 
   execute(data: RegisterSaleData): Observable<CommandResponse> {
-    return this.eventRepository.findProduct(data.branchId, data.id).pipe(
-      map((productRegistered: IEvent) => {
-        if (!productRegistered)
+    const productIds = data.products.map((product) => product.id);
+    return this.eventRepository.findProducts(data.branchId, productIds).pipe(
+      map((productsRegistered: IEvent[]) => {
+        if (!productsRegistered || productsRegistered.length === 0)
           throw new NotFoundException('Product not registered');
 
-        const productParsed: RegisterProductData =
-          productRegistered.eventData as RegisterProductData;
+        const productsUpdated = productsRegistered.map((productRegistered) => {
+          const productParsed: RegisterProductData =
+            productRegistered.eventData as RegisterProductData;
 
-        if (productParsed.inventoryStock < data.inventoryStock)
-          throw new BadRequestException('Product inventory is not enough');
+          const productDTO = data.products.find(
+            (productSearch) => productSearch.id === productParsed.id,
+          );
+          if (
+            productDTO &&
+            productParsed.inventoryStock < productDTO.inventoryStock
+          )
+            throw new BadRequestException('Product inventory is not enough');
 
-        productParsed.inventoryStock =
-          productParsed.inventoryStock - data.inventoryStock;
+          productParsed.inventoryStock =
+            productParsed.inventoryStock - productDTO.inventoryStock;
 
-        this.emitCommand(productParsed);
+          return productParsed;
+        });
+
+        const productsSale = productsUpdated.map((productUpdated) => {
+          const productDTO = data.products.find(
+            (productSearch) => productSearch.id === productUpdated.id,
+          );
+
+          if (!productDTO)
+            throw new BadRequestException('Product inventory is not enough');
+          return {
+            productName: productUpdated.name,
+            productPrice: productUpdated.price,
+            quantity: productDTO.inventoryStock,
+          };
+        });
+        const newSales = this.validateEntity(productsSale);
+
+        this.emitProductSale(newSales, data.branchId);
+        this.emitProductUpdate(productsUpdated);
         return { statusCode: 200, success: true };
       }),
     );
   }
 
-  private emitCommand(data: RegisterProductData): void {
+  private emitProductSale(datas: ISale[], branchId: string): void {
     this.commandBus.publish(
-      new RegisterFinalCustomerSaleCommand(data.branchId, JSON.stringify(data)),
+      new RegisterFinalCustomerSaleCommand(branchId, JSON.stringify(datas)),
     );
+  }
+
+  private emitProductUpdate(datas: RegisterProductData[]): void {
+    datas.forEach((data) => {
+      this.commandBus.publish(
+        new RegisterProductUpdated(data.branchId, JSON.stringify(data)),
+      );
+    });
+  }
+
+  private validateEntity(datas: ISale[]): ISale[] {
+    return datas.map((data) => {
+      const newProduct = new SaleEntity(data);
+
+      return {
+        id: newProduct.id.valueOf(),
+        productName: newProduct.productName.valueOf(),
+        productPrice: newProduct.productPrice.valueOf(),
+        quantity: newProduct.quantity.valueOf(),
+      };
+    });
   }
 }

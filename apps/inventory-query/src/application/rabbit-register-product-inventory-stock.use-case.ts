@@ -1,11 +1,15 @@
-import { IProduct, IProductRepository, RegisterProductData } from '@Domain';
+import {
+  IProduct,
+  IProductRepository,
+  RegisterProductInventoryStockData,
+} from '@Domain';
 import { Observable, switchMap } from 'rxjs';
 
 export class RabbitRegisterProductInventoryStockUseCase {
   constructor(private readonly productRepository: IProductRepository) {}
 
-  execute(data: RegisterProductData): Observable<IProduct> {
-    const dbProduct = this.productRepository.findProductById(data.id);
+  execute(data: RegisterProductInventoryStockData): Observable<IProduct> {
+    const dbProduct = this.productRepository.findProductById(data.product.id);
     return dbProduct.pipe(
       switchMap((product: IProduct) => {
         const productUpdated = this.updateProductStock(product, data);
@@ -16,9 +20,10 @@ export class RabbitRegisterProductInventoryStockUseCase {
 
   private updateProductStock(
     product: IProduct,
-    data: RegisterProductData,
+    data: RegisterProductInventoryStockData,
   ): IProduct {
-    product.inventoryStock = data.inventoryStock;
+    product.inventoryStock =
+      product.inventoryStock - data.product.inventoryStock;
 
     return product;
   }

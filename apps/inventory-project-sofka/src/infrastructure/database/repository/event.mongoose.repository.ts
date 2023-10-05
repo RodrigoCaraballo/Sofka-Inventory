@@ -18,6 +18,24 @@ export class EventMongooseRepository implements IEventRepository {
     @InjectModel(EventMongoose.name)
     private readonly eventRepository: Model<EventMongooseDocument>,
   ) {}
+  saveEvents(events: IEvent[]): void {
+    throw new Error('Method not implemented.');
+  }
+  findProducts(
+    branchId: string,
+    productIds: string[],
+  ): Observable<EventMongooseDocument[]> {
+    return from(
+      this.eventRepository
+        .find({
+          eventAggregateRootId: branchId,
+          eventType: 'PRODUCT_UPDATED',
+          'eventData.id': { $in: productIds },
+        })
+        .sort({ eventPublishedAt: -1 })
+        .exec(),
+    );
+  }
 
   saveEvent(event: IEvent): void {
     this.eventRepository.create(event);
