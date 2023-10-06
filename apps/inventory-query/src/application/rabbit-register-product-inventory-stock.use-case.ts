@@ -23,7 +23,7 @@ export class RabbitRegisterProductInventoryStockUseCase {
     data: RegisterProductInventoryStockData,
   ): IProduct {
     product.inventoryStock =
-      product.inventoryStock - data.product.inventoryStock;
+      product.inventoryStock + data.product.inventoryStock;
 
     return product;
   }

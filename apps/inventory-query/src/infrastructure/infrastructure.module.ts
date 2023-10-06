@@ -1,4 +1,6 @@
 import {
+  GetBranchUseCase,
+  GetSalesUseCase,
   RabbitRegisterBranchUseCase,
   RabbitRegisterFinalCustomerSaleUseCase,
   RabbitRegisterProductInventoryStockUseCase,
@@ -14,6 +16,7 @@ import {
 } from '@QueryInfrastructure';
 import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
 import { Module } from '@nestjs/common';
+import { ProductController } from './controller/product-controller';
 import { DatabaseModule } from './database/database.module';
 import {
   BranchTypeOrmRepository,
@@ -94,6 +97,18 @@ import {
       inject: [ProductTypeOrmRepository],
     },
     {
+      provide: GetBranchUseCase,
+      useFactory: (branchRepository: BranchTypeOrmRepository) =>
+        new GetBranchUseCase(branchRepository),
+      inject: [BranchTypeOrmRepository],
+    },
+    {
+      provide: GetSalesUseCase,
+      useFactory: (salesRepository: SaleTypeOrmRepository) =>
+        new GetSalesUseCase(salesRepository),
+      inject: [SaleTypeOrmRepository],
+    },
+    {
       provide: MessagingBranchHandler,
       useFactory: (rabbitRegisterBranchUseCase: RabbitRegisterBranchUseCase) =>
         new MessagingBranchHandler(rabbitRegisterBranchUseCase),
@@ -130,5 +145,6 @@ import {
       inject: [RabbitRegisterUserUseCase],
     },
   ],
+  controllers: [ProductController],
 })
 export class InfrastructureModule {}

@@ -8,6 +8,7 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Observable, from } from 'rxjs';
+import { AuthData } from '../../../../../domain/interfaces/event-data/auth.data';
 import {
   EventMongoose,
   EventMongooseDocument,
@@ -18,9 +19,16 @@ export class EventMongooseRepository implements IEventRepository {
     @InjectModel(EventMongoose.name)
     private readonly eventRepository: Model<EventMongooseDocument>,
   ) {}
-  saveEvents(events: IEvent[]): void {
-    throw new Error('Method not implemented.');
+
+  authUser(auth: AuthData): Observable<EventMongooseDocument> {
+    return from(
+      this.eventRepository.findOne({
+        'eventData.email': auth.email,
+        'eventData.password': auth.password,
+      }),
+    );
   }
+
   findProducts(
     branchId: string,
     productIds: string[],

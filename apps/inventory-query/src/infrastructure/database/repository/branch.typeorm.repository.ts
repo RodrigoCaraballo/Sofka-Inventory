@@ -21,4 +21,13 @@ export class BranchTypeOrmRepository implements IBranchRepository {
       }),
     );
   }
+
+  findBranchByIdWithRelations(id: string): Observable<IBranch> {
+    return from(
+      this.branchRepository.findOne({
+        where: { id },
+        relations: ['products', 'employees'],
+      }),
+    );
+  }
 }

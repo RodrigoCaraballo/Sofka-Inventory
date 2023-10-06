@@ -29,8 +29,6 @@ export class RegisterProductUseCase {
 
   private emitCommand(data: RegisterProductData): void {
     const newProduct = this.validateEntity(data);
-    console.log(newProduct);
-
     this.commandBus.publish(
       new RegisterProductCommand(data.branchId, JSON.stringify(newProduct)),
     );

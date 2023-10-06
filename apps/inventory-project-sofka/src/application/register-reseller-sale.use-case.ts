@@ -55,6 +55,7 @@ export class RegisterResellerSaleUseCase {
             throw new BadRequestException('Product inventory is not enough');
           return {
             invoiceNumber: data.invoiceNumber,
+            type: 'RESELLER',
             productName: productUpdated.name,
             productPrice: productUpdated.price * 0.9,
             quantity: productDTO.inventoryStock,

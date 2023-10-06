@@ -1,4 +1,5 @@
 import {
+  AuthUseCase,
   RegisterBranchUseCase,
   RegisterFinalCustomerSaleUseCase,
   RegisterProductInventoryStockUseCase,
@@ -8,6 +9,7 @@ import {
 } from '@CommandApplication';
 import { AmqpConnection, RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
 import { Module } from '@nestjs/common';
+import { AuthController } from './controller/auth.controller';
 import { CommandBranchController } from './controller/branch.controller';
 import { CommandProductsController } from './controller/product.controller';
 import { CommandUserController } from './controller/user.controller';
@@ -71,6 +73,12 @@ import { CommandBus } from './listener/command.bus';
       inject: [EventMongooseRepository, CommandBus],
     },
     {
+      provide: AuthUseCase,
+      useFactory: (eventRepository: EventMongooseRepository) =>
+        new AuthUseCase(eventRepository),
+      inject: [EventMongooseRepository],
+    },
+    {
       provide: RegisterResellerSaleUseCase,
       useFactory: (
         eventRepository: EventMongooseRepository,
@@ -91,6 +99,7 @@ import { CommandBus } from './listener/command.bus';
     CommandBranchController,
     CommandProductsController,
     CommandUserController,
+    AuthController,
   ],
 })
 export class InfrastructureModule {}

@@ -1,7 +1,7 @@
 import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { MessagingBranchHandler } from './infrastructure/messaging/branch.messaing';
+import { BranchGateway } from './infrastructure';
 
 @Module({
   imports: [
@@ -19,12 +19,6 @@ import { MessagingBranchHandler } from './infrastructure/messaging/branch.messai
       uri: process.env.RABBIT_MQ_URI,
     }),
   ],
-  providers: [
-    {
-      provide: MessagingBranchHandler,
-      useFactory: () => new MessagingBranchHandler(),
-      inject: [],
-    },
-  ],
+  providers: [BranchGateway],
 })
 export class WebSocketModule {}

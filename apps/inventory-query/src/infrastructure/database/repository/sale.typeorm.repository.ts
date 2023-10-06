@@ -9,6 +9,11 @@ export class SaleTypeOrmRepository implements ISaleRepository {
     @InjectRepository(SaleTypeOrmEntity)
     private readonly saleRepository: Repository<SaleTypeOrmEntity>,
   ) {}
+  findSales(branchId: string): Observable<ISale[]> {
+    return from(
+      this.saleRepository.find({ where: { branch: { id: branchId } } }),
+    );
+  }
 
   saveSales(sales: ISale[]): Observable<ISale[]> {
     return from(this.saleRepository.save(sales));
