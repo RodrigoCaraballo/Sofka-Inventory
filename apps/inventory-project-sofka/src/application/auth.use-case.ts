@@ -11,7 +11,7 @@ export class AuthUseCase {
   execute(data: AuthData): Observable<AuthReponse> {
     return this.eventRepository.authUser(data).pipe(
       map((event: IEvent) => {
-        if (!event) throw new BadRequestException('User invalida credentials');
+        if (!event) throw new BadRequestException('Invalid user credentials');
         const user = event.eventData as RegisterUserData;
         const token = jwt.sign(
           {
