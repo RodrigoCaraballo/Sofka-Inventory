@@ -35,7 +35,7 @@ import {
         },
       ],
 
-      uri: process.env.RABBIT_MQ_URI || 'amqp://localhost:5672',
+      uri: process.env.RABBIT_MQ_URI,
     }),
     DatabaseModule,
   ],

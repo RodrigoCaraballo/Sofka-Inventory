@@ -26,7 +26,7 @@ import { CommandBus } from './listener/command.bus';
           type: 'topic',
         },
       ],
-      uri: process.env.RABBIT_MQ_URI || 'amqp://127.0.0.1:5672',
+      uri: process.env.RABBIT_MQ_URI,
     }),
     DatabaseModule,
   ],

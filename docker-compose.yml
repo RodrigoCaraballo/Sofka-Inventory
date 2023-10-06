@@ -1,0 +1,100 @@
+version: '3.14'
+services:
+  rabbitmq-inventory:
+    image: rabbitmq:3-management
+    ports:
+      - 5672:5672
+      - 15672:15672
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    healthcheck:
+      test: ['CMD', 'rabbitmqctl', 'list_queues']
+      interval: 5s
+      timeout: 10s
+      retries: 5
+  mysql-inventory:
+    image: mysql
+    ports:
+      - 3306:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=rodri007
+      - MYSQL_DATABASE=inventory
+    volumes:
+      - mysql-data:/var/lib/mysql
+  mongo-inventory:
+    image: mongo
+    ports:
+      - 27017:27017
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=rodri
+      - MONGO_INITDB_ROOT_PASSWORD=rodri007
+      - MONGO_INITDB_DATABASE=inventory
+    volumes:
+      - mongo-data:/data/db
+  inventory-command:
+    image: rodrigocaraballo/nest-inventory-command:0.1
+    ports:
+      - 3000:3000
+    restart: on-failure
+    environment:
+      - MONGO_DB_URI=mongodb://rodri:rodri007@mongo-inventory:27017/inventory?authSource=admin
+      - RABBIT_MQ_URI=amqp://rabbitmq-inventory:5672
+    links:
+      - mongo-inventory
+      - rabbitmq-inventory
+    volumes:
+      - command-data:/command/app/data
+    depends_on:
+      - rabbitmq-inventory
+  inventory-query:
+    image: rodrigocaraballo/nest-inventory-query:0.1
+    ports:
+      - 3001:3001
+    restart: on-failure
+    environment:
+      - RABBIT_MQ_URI=amqp://rabbitmq-inventory:5672
+      - MYSQL_DB_USER=root
+      - MYSQL_DB_PASSWORD=rodri007
+      - MYSQL_DB_PORT=3306
+      - MYSQL_DB_HOST=mysql-inventory
+      - MYSQL_DB_DATABASE=inventory
+    links:
+      - mysql-inventory
+      - rabbitmq-inventory
+    volumes:
+      - query-data:/query/app/data
+    depends_on:
+      - rabbitmq-inventory
+  inventory-socket:
+    image: rodrigocaraballo/nest-inventory-socket:0.1
+    ports:
+      - 3003:3003
+      - 3004:3004
+    restart: on-failure
+    environment:
+      - RABBIT_MQ_URI=amqp://rabbitmq-inventory:5672
+    links:
+      - rabbitmq-inventory
+    volumes:
+      - socket-data:/query/app/data
+    depends_on:
+      - rabbitmq-inventory
+  angular:
+    image: rodrigocaraballo/angular-inventory:0.1
+    restart: on-failure
+    ports:
+      - 4200:4200
+    links:
+      - inventory-command
+      - inventory-query
+      - inventory-socket
+    volumes:
+      - angular-app:/usr/share/nginx/html
+volumes:
+  command-data:
+  query-data:
+  socket-data:
+  mongo-data:
+  mysql-data:
+  rabbitmq-data:
+  angular-app:
