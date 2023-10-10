@@ -1,0 +1,151 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: command-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: command-app
+  template:
+    metadata:
+      labels:
+        app: command-app
+    spec:
+      containers:
+        - name: command-app
+          image: rodrigocaraballo/nest-inventory-command:0.1
+          ports:
+            - containerPort: 3000
+          env:
+            - name: MONGO_DB_URI
+              valueFrom:
+                configMapKeyRef:
+                  name: service-env
+                  key: MONGO_URL
+            - name: RABBIT_MQ_URI
+              valueFrom:
+                configMapKeyRef:
+                  name: service-env
+                  key: RABBIT_URL
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: query-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: query-app
+  template:
+    metadata:
+      labels:
+        app: query-app
+    spec:
+      containers:
+        - name: query-app
+          image: rodrigocaraballo/nest-inventory-query:0.2
+          ports:
+            - containerPort: 3001
+          env:
+            - name: RABBIT_MQ_URI
+              valueFrom:
+                configMapKeyRef:
+                  name: service-env
+                  key: RABBIT_URL
+            - name: MYSQL_DB_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: service-env
+                  key: MYSQL_DB_USER
+            - name: MYSQL_DB_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: service-env
+                  key: MYSQL_DB_PASSWORD
+            - name: MYSQL_DB_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: service-env
+                  key: MYSQL_DB_PORT
+            - name: MYSQL_DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: service-env
+                  key: MYSQL_DB_HOST
+            - name: MYSQL_DB_DATABASE
+              valueFrom:
+                configMapKeyRef:
+                  name: service-env
+                  key: MYSQL_DB_DATABASE
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: socket-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: socket-app
+  template:
+    metadata:
+      labels:
+        app: socket-app
+    spec:
+      containers:
+        - name: socket-app
+          image: rodrigocaraballo/nest-inventory-socket:0.1
+          ports:
+            - containerPort: 3004
+          env:
+            - name: RABBIT_MQ_URI
+              valueFrom:
+                configMapKeyRef:
+                  name: service-env
+                  key: RABBIT_URL
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: command-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: command-app
+  ports:
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: query-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: query-app
+  ports:
+    - protocol: TCP
+      port: 3001
+      targetPort: 3001
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: socket-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: socket-app
+  ports:
+    - protocol: TCP
+      port: 3004
+      targetPort: 3004

@@ -30,4 +30,8 @@ export class BranchTypeOrmRepository implements IBranchRepository {
       }),
     );
   }
+
+  findAllBranches(): Observable<IBranch[]> {
+    return from(this.branchRepository.find());
+  }
 }

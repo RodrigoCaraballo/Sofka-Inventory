@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: service-env
+data:
+  RABBIT_URL: 'amqp://rabbitmq-service:5672'
+  MONGO_URL: 'mongodb://rodri:rodri007@mongodb-service:27017/'
+  RABBIT_MQ_URI: 'amqp://rabbitmq-service:5672'
+  MYSQL_DB_USER: 'root'
+  MYSQL_DB_PASSWORD: 'rodri007'
+  MYSQL_DB_PORT: '3306'
+  MYSQL_DB_HOST: 'mysql-service'
+  MYSQL_DB_DATABASE: 'inventory'
+  COMMAND_API: '192.168.50.217:31492'
+  QUERY_API: '192.168.50.217:30471'
+  SOCKET_API: '192.168.50.217:30738'

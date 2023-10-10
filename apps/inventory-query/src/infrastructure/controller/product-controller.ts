@@ -1,5 +1,9 @@
 import { IBranch, ISale } from '@Domain';
-import { GetBranchUseCase, GetSalesUseCase } from '@QueryApplication';
+import {
+  GetBranchUseCase,
+  GetBranchesUseCase,
+  GetSalesUseCase,
+} from '@QueryApplication';
 import { Controller, Get, Param } from '@nestjs/common';
 import { Observable } from 'rxjs';
 
@@ -8,6 +12,7 @@ export class ProductController {
   constructor(
     private readonly getBranchUseCase: GetBranchUseCase,
     private readonly getSalesUseCase: GetSalesUseCase,
+    private readonly getBranchesUseCase: GetBranchesUseCase,
   ) {}
 
   @Get('branch/:branchId')
@@ -18,5 +23,10 @@ export class ProductController {
   @Get('sales/:branchId')
   getSales(@Param('branchId') branchId: string): Observable<ISale[]> {
     return this.getSalesUseCase.execute(branchId);
+  }
+
+  @Get('branches')
+  getBranches(): Observable<IBranch[]> {
+    return this.getBranchesUseCase.execute();
   }
 }

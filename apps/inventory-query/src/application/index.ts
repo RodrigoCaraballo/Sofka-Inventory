@@ -1,4 +1,5 @@
 export * from './get-branch.use-case';
+export * from './get-branches.use-case';
 export * from './get-sales.use-case';
 export * from './rabbit-register-branch.use-case';
 export * from './rabbit-register-final-customer-sale.use-case';

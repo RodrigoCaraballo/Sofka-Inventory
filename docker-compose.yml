@@ -47,7 +47,7 @@ services:
     depends_on:
       - rabbitmq-inventory
   inventory-query:
-    image: rodrigocaraballo/nest-inventory-query:0.1
+    image: rodrigocaraballo/nest-inventory-query:0.2
     ports:
       - 3001:3001
     restart: on-failure
@@ -80,7 +80,7 @@ services:
     depends_on:
       - rabbitmq-inventory
   angular:
-    image: rodrigocaraballo/angular-inventory:0.1
+    image: rodrigocaraballo/angular-inventory:0.8
     restart: on-failure
     ports:
       - 4200:4200
@@ -90,6 +90,10 @@ services:
       - inventory-socket
     volumes:
       - angular-app:/usr/share/nginx/html
+    environment:
+      COMMAND_API: 'inventory-command:3000'
+      QUERY_API: 'inventory-command:3001'
+      SOCKET_API: 'inventory-command:3004'
 volumes:
   command-data:
   query-data:

@@ -1,5 +1,6 @@
 import {
   GetBranchUseCase,
+  GetBranchesUseCase,
   GetSalesUseCase,
   RabbitRegisterBranchUseCase,
   RabbitRegisterFinalCustomerSaleUseCase,
@@ -35,7 +36,7 @@ import {
         },
       ],
 
-      uri: process.env.RABBIT_MQ_URI,
+      uri: process.env.RABBIT_MQ_URI || 'amqp://localhost:5672',
     }),
     DatabaseModule,
   ],
@@ -107,6 +108,12 @@ import {
       useFactory: (salesRepository: SaleTypeOrmRepository) =>
         new GetSalesUseCase(salesRepository),
       inject: [SaleTypeOrmRepository],
+    },
+    {
+      provide: GetBranchesUseCase,
+      useFactory: (branchRepository: BranchTypeOrmRepository) =>
+        new GetBranchesUseCase(branchRepository),
+      inject: [BranchTypeOrmRepository],
     },
     {
       provide: MessagingBranchHandler,

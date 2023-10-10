@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: angular-front
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: angular-front
+  template:
+    metadata:
+      labels:
+        app: angular-front
+    spec:
+      containers:
+        - name: angular-front
+          image: rodrigocaraballo/angular-inventory:0.9
+          ports:
+            - containerPort: 4200
+          env:
+            - name: COMMAND_API
+              valueFrom:
+                configMapKeyRef:
+                  name: service-env
+                  key: COMMAND_API
+            - name: QUERY_API
+              valueFrom:
+                configMapKeyRef:
+                  name: service-env
+                  key: QUERY_API
+            - name: SOCKET_API
+              valueFrom:
+                configMapKeyRef:
+                  name: service-env
+                  key: SOCKET_API
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: front-loadbalancer
+spec:
+  type: LoadBalancer
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 4200
+  selector:
+    app: angular-front
