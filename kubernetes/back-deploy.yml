@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: command-app
-          image: rodrigocaraballo/nest-inventory-command:0.1
+          image: rodrigocaraballo/nest-inventory-command:1
           ports:
             - containerPort: 3000
           env:
@@ -46,7 +46,7 @@ spec:
     spec:
       containers:
         - name: query-app
-          image: rodrigocaraballo/nest-inventory-query:0.2
+          image: rodrigocaraballo/nest-inventory-query:1
           ports:
             - containerPort: 3001
           env:
@@ -98,7 +98,7 @@ spec:
     spec:
       containers:
         - name: socket-app
-          image: rodrigocaraballo/nest-inventory-socket:0.1
+          image: rodrigocaraballo/nest-inventory-socket:1
           ports:
             - containerPort: 3004
           env:
@@ -114,7 +114,6 @@ kind: Service
 metadata:
   name: command-service
 spec:
-  type: LoadBalancer
   selector:
     app: command-app
   ports:
@@ -128,7 +127,6 @@ kind: Service
 metadata:
   name: query-service
 spec:
-  type: LoadBalancer
   selector:
     app: query-app
   ports:
@@ -142,7 +140,6 @@ kind: Service
 metadata:
   name: socket-service
 spec:
-  type: LoadBalancer
   selector:
     app: socket-app
   ports:

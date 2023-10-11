@@ -80,7 +80,7 @@ services:
     depends_on:
       - rabbitmq-inventory
   angular:
-    image: rodrigocaraballo/angular-inventory:0.8
+    image: rodrigocaraballo/angular-inventory:0.9
     restart: on-failure
     ports:
       - 4200:4200

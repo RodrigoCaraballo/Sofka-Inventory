@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: angular-front
-          image: rodrigocaraballo/angular-inventory:0.9
+          image: rodrigocaraballo/angular-inventory:0.92
           ports:
             - containerPort: 4200
           env:
