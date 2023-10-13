@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: command-app
-          image: rodrigocaraballo/nest-inventory-command:1
+          image: rodrigocaraballo/nest-inventory-command:0.1
           ports:
             - containerPort: 3000
           env:
@@ -46,7 +46,7 @@ spec:
     spec:
       containers:
         - name: query-app
-          image: rodrigocaraballo/nest-inventory-query:1
+          image: rodrigocaraballo/nest-inventory-query:0.1
           ports:
             - containerPort: 3001
           env:
@@ -98,7 +98,7 @@ spec:
     spec:
       containers:
         - name: socket-app
-          image: rodrigocaraballo/nest-inventory-socket:1
+          image: rodrigocaraballo/nest-inventory-socket:0.1
           ports:
             - containerPort: 3004
           env:
@@ -109,11 +109,44 @@ spec:
                   key: RABBIT_URL
 
 ---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth-app
+  template:
+    metadata:
+      labels:
+        app: auth-app
+    spec:
+      containers:
+        - name: auth-app
+          image: rodrigocaraballo/nest-inventory-auth:0.1
+          ports:
+            - containerPort: 3005
+          env:
+            - name: RABBIT_MQ_URI
+              valueFrom:
+                configMapKeyRef:
+                  name: service-env
+                  key: RABBIT_URL
+            - name: MONGO_DB_URI
+              valueFrom:
+                configMapKeyRef:
+                  name: service-env
+                  key: MONGO_URL
+
+---
 apiVersion: v1
 kind: Service
 metadata:
   name: command-service
 spec:
+  type: LoadBalancer
   selector:
     app: command-app
   ports:
@@ -127,6 +160,7 @@ kind: Service
 metadata:
   name: query-service
 spec:
+  type: LoadBalancer
   selector:
     app: query-app
   ports:
@@ -140,9 +174,24 @@ kind: Service
 metadata:
   name: socket-service
 spec:
+  type: LoadBalancer
   selector:
     app: socket-app
   ports:
     - protocol: TCP
       port: 3004
       targetPort: 3004
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: auth-app
+  ports:
+    - protocol: TCP
+      port: 3005
+      targetPort: 3005

@@ -36,6 +36,24 @@
       "compilerOptions": {
         "tsConfigPath": "apps/web-socket/tsconfig.app.json"
       }
+    },
+    "auth": {
+      "type": "application",
+      "root": "apps/auth",
+      "entryFile": "main",
+      "sourceRoot": "apps/auth/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/auth/tsconfig.app.json"
+      }
+    },
+    "authorization": {
+      "type": "application",
+      "root": "apps/authorization",
+      "entryFile": "main",
+      "sourceRoot": "apps/authorization/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/authorization/tsconfig.app.json"
+      }
     }
   }
 }

@@ -18,7 +18,7 @@ export class ProductTypeOrmEntity {
   @Column()
   description: string;
 
-  @Column()
+  @Column('decimal', { precision: 6, scale: 2 })
   price: number;
 
   @Column()

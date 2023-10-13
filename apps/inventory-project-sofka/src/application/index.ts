@@ -1,4 +1,4 @@
-export * from './auth.use-case';
+export * from '../../../authorization/src/application/auth.use-case';
 export * from './register-branch.use-case';
 export * from './register-final-customer-sale.use-case';
 export * from './register-product-inventory-stock.use-case';

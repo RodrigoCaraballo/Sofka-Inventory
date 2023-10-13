@@ -13,6 +13,7 @@
     "start-command:dev": "nest start inventory-project-sofka --watch",
     "start-query:dev": "nest start inventory-query --watch",
     "start-socket:dev": "nest start web-socket --watch",
+    "start-auth:dev": "nest start authorization --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/apps/inventory-project-sofka/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",

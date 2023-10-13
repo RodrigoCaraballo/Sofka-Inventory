@@ -1,4 +1,8 @@
-import { RegisterProductInventoryStockData, RegisterSalesData } from '@Domain';
+import {
+  RegisterProductInventoryStockData,
+  RegisterSalesData,
+  RegisterUserData,
+} from '@Domain';
 import { RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
 import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server } from 'socket.io';
@@ -80,6 +84,21 @@ export class BranchGateway {
     const productChanged: RegisterProductData = JSON.parse(payload);
     try {
       this.server.emit(`product_update_${productChanged.branchId}`, payload);
+      console.log('Evento emitido correctamente');
+    } catch (error) {
+      console.error('Error al emitir el evento:', error);
+    }
+  }
+
+  @RabbitSubscribe({
+    exchange: 'BRANCH_EX_1',
+    routingKey: 'USER_REGISTERED',
+    queue: 'WS_USER_REGISTERED',
+  })
+  registerUser(payload: string) {
+    const userRegistered: RegisterUserData = JSON.parse(payload);
+    try {
+      this.server.emit(`user_registered_${userRegistered.branchId}`, payload);
       console.log('Evento emitido correctamente');
     } catch (error) {
       console.error('Error al emitir el evento:', error);

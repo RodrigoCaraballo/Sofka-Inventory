@@ -11,5 +11,6 @@ import { InfrastructureModule } from './infrastructure/infrastructure.module';
     MongooseModule.forRoot(process.env.MONGO_DB_URI),
     InfrastructureModule,
   ],
+  providers: [],
 })
 export class InventoryCommandModule {}

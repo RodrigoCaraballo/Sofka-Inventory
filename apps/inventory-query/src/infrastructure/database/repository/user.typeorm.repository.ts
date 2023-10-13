@@ -9,6 +9,9 @@ export class UserTypeOrmRepository implements IUserRepository {
     @InjectRepository(UserTypeOrmEntity)
     private readonly userRepository: Repository<UserTypeOrmEntity>,
   ) {}
+  countDocuments(): Observable<number> {
+    throw new Error('Method not implemented.');
+  }
 
   saveUser(user: IUser): Observable<IUser> {
     return from(this.userRepository.save(user));

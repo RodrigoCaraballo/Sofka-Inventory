@@ -4,9 +4,11 @@ import {
   GetBranchesUseCase,
   GetSalesUseCase,
 } from '@QueryApplication';
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, UseGuards } from '@nestjs/common';
 import { Observable } from 'rxjs';
+import { AuthGuard } from '../guard/authorization.guard';
 
+@UseGuards(AuthGuard)
 @Controller('api/v1/branch')
 export class ProductController {
   constructor(

@@ -3,8 +3,8 @@ import {
   IEventRepository,
   RegisterBranchData,
   RegisterProductData,
-  RegisterUserData,
 } from '@Domain';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Observable, from } from 'rxjs';
@@ -14,6 +14,7 @@ import {
   EventMongooseDocument,
 } from '../model/event.mongoose.document';
 
+@Injectable()
 export class EventMongooseRepository implements IEventRepository {
   constructor(
     @InjectModel(EventMongoose.name)
@@ -77,11 +78,11 @@ export class EventMongooseRepository implements IEventRepository {
     );
   }
 
-  existUser(user: RegisterUserData): Observable<EventMongooseDocument> {
+  existUser(email: string): Observable<EventMongooseDocument> {
     return from(
       this.eventRepository.findOne({
         eventType: 'USER_REGISTERED',
-        'eventData.email': user.email,
+        'eventData.email': email,
       }),
     );
   }
@@ -110,5 +111,9 @@ export class EventMongooseRepository implements IEventRepository {
         })
         .sort({ eventPublishedAt: -1 }),
     );
+  }
+
+  countDocuments(): Observable<number> {
+    return from(this.eventRepository.countDocuments().exec());
   }
 }

@@ -25,6 +25,7 @@ import {
   SaleTypeOrmRepository,
   UserTypeOrmRepository,
 } from './database/repository';
+import { AuthGuard } from './guard/authorization.guard';
 
 @Module({
   imports: [
@@ -151,6 +152,7 @@ import {
         new MessagingUserHandler(registerUserUseCase),
       inject: [RabbitRegisterUserUseCase],
     },
+    AuthGuard,
   ],
   controllers: [ProductController],
 })

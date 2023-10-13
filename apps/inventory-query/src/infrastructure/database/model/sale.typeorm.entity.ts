@@ -28,7 +28,7 @@ export class SaleTypeOrmEntity {
   @Column()
   productName: string;
 
-  @Column()
+  @Column('decimal', { precision: 6, scale: 2 })
   productPrice: number;
 
   @Column()

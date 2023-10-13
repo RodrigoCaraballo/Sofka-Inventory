@@ -18,16 +18,26 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
-      "@Domain": ["./apps/domain"],
-      "@Sofka": ["./apps/domain/lib"],
+      "@Domain": [
+        "./apps/domain"
+      ],
+      "@Sofka": [
+        "./apps/domain/lib"
+      ],
       // Command Microservice
-      "@CommandApplication": ["./apps/inventory-project-sofka/src/application"],
+      "@CommandApplication": [
+        "./apps/inventory-project-sofka/src/application"
+      ],
       "@CommandInfrastructure": [
         "./apps/inventory-project-sofka/src/infrastructure"
       ],
       // Query Microservice
-      "@QueryApplication": ["./apps/inventory-query/src/application"],
-      "@QueryInfrastructure": ["./apps/inventory-query/src/infrastructure"]
+      "@QueryApplication": [
+        "./apps/inventory-query/src/application"
+      ],
+      "@QueryInfrastructure": [
+        "./apps/inventory-query/src/infrastructure"
+      ]
     }
   }
 }

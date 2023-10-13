@@ -17,7 +17,7 @@ export class RegisterUserUseCase {
   ) {}
 
   execute(data: RegisterUserData): Observable<CommandResponse> {
-    return this.eventRepository.existUser(data).pipe(
+    return this.eventRepository.existUser(data.email).pipe(
       map((userRegistered: IEvent) => {
         if (userRegistered)
           throw new BadRequestException('Email already registered');

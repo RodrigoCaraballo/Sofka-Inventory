@@ -1,5 +1,4 @@
 import {
-  AuthUseCase,
   RegisterBranchUseCase,
   RegisterFinalCustomerSaleUseCase,
   RegisterProductInventoryStockUseCase,
@@ -8,14 +7,17 @@ import {
   RegisterUserUseCase,
 } from '@CommandApplication';
 import { AmqpConnection, RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
-import { Module } from '@nestjs/common';
-import { AuthController } from './controller/auth.controller';
+import { Module, OnApplicationBootstrap } from '@nestjs/common';
 import { CommandBranchController } from './controller/branch.controller';
 import { CommandProductsController } from './controller/product.controller';
 import { CommandUserController } from './controller/user.controller';
 import { DatabaseModule } from './database/database.module';
 import { EventMongooseRepository } from './database/repository';
+import { AdminGuard } from './guards/admin.guard';
+import { AuthGuard } from './guards/authorization.guard';
+import { SuperAdminGuard } from './guards/super-user.guard';
 import { CommandBus } from './listener/command.bus';
+import { EventMongooseSeedService } from './seed';
 
 @Module({
   imports: [
@@ -73,12 +75,6 @@ import { CommandBus } from './listener/command.bus';
       inject: [EventMongooseRepository, CommandBus],
     },
     {
-      provide: AuthUseCase,
-      useFactory: (eventRepository: EventMongooseRepository) =>
-        new AuthUseCase(eventRepository),
-      inject: [EventMongooseRepository],
-    },
-    {
       provide: RegisterResellerSaleUseCase,
       useFactory: (
         eventRepository: EventMongooseRepository,
@@ -94,12 +90,26 @@ import { CommandBus } from './listener/command.bus';
       ) => new CommandBus(eventRepository, amqpConnection),
       inject: [EventMongooseRepository, AmqpConnection],
     },
+    {
+      provide: EventMongooseSeedService,
+      useFactory: (eventRepository: EventMongooseRepository) =>
+        new EventMongooseSeedService(eventRepository),
+      inject: [EventMongooseRepository],
+    },
+    AuthGuard,
+    SuperAdminGuard,
+    AdminGuard,
   ],
   controllers: [
     CommandBranchController,
     CommandProductsController,
     CommandUserController,
-    AuthController,
   ],
 })
-export class InfrastructureModule {}
+export class InfrastructureModule implements OnApplicationBootstrap {
+  constructor(private readonly seedService: EventMongooseSeedService) {}
+
+  onApplicationBootstrap() {
+    this.seedService.seedData();
+  }
+}

@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: angular-front
-          image: rodrigocaraballo/angular-inventory:0.92
+          image: rodrigocaraballo/angular-inventory:0.3
           ports:
             - containerPort: 4200
           env:
@@ -23,16 +23,25 @@ spec:
                 configMapKeyRef:
                   name: service-env
                   key: COMMAND_API
+                  optional: true
             - name: QUERY_API
               valueFrom:
                 configMapKeyRef:
                   name: service-env
                   key: QUERY_API
+                  optional: true
             - name: SOCKET_API
               valueFrom:
                 configMapKeyRef:
                   name: service-env
                   key: SOCKET_API
+                  optional: true
+            - name: AUTH_API
+              valueFrom:
+                configMapKeyRef:
+                  name: service-env
+                  key: AUTH_API
+                  optional: true
 
 ---
 apiVersion: v1
@@ -42,8 +51,7 @@ metadata:
 spec:
   type: LoadBalancer
   ports:
-    - protocol: TCP
-      port: 80
+    - port: 80
       targetPort: 4200
   selector:
     app: angular-front
