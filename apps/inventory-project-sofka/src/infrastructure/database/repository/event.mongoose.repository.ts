@@ -40,8 +40,16 @@ export class EventMongooseRepository implements IEventRepository {
           {
             $match: {
               eventAggregateRootId: branchId,
-              eventType: 'PRODUCT_UPDATED',
-              'eventData.id': { $in: productIds },
+              $or: [
+                {
+                  eventType: 'PRODUCT_UPDATED',
+                  'eventData.id': { $in: productIds },
+                },
+                {
+                  eventType: 'PRODUCT_REGISTERED',
+                  'eventData.id': { $in: productIds },
+                },
+              ],
             },
           },
           {

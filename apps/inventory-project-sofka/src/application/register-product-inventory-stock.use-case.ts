@@ -18,40 +18,52 @@ export class RegisterProductInventoryStockUseCase {
   ) {}
 
   execute(
-    data: RegisterProductInventoryStockData,
+    datas: RegisterProductInventoryStockData[],
   ): Observable<CommandResponse> {
+    const productIds = datas.map((product) => product.product.id);
     return this.eventRepository
-      .findProduct(data.branchId, data.product.id)
+      .findProducts(datas[0].branchId, productIds)
       .pipe(
-        map((productEvent: IEvent) => {
-          if (!productEvent) throw new NotFoundException('Product not found');
-          const productParsed: RegisterProductData =
-            productEvent.eventData as RegisterProductData;
+        map((productEvent: IEvent[]) => {
+          if (!productEvent || productEvent.length === 0)
+            throw new NotFoundException('Product not found');
 
-          productParsed.inventoryStock =
-            productParsed.inventoryStock + data.product.inventoryStock;
+          const productsUpdated = productEvent.map((productEvent: IEvent) => {
+            const productParsed: RegisterProductData =
+              productEvent.eventData as RegisterProductData;
 
-          console.log(productParsed.inventoryStock);
+            const productDTO = datas.find(
+              (productSearch) => productSearch.product.id === productParsed.id,
+            );
 
-          this.emitInventoryStock(data);
-          this.emitProductUpdate(productParsed);
+            productParsed.inventoryStock =
+              productParsed.inventoryStock + productDTO.product.inventoryStock;
+            return productParsed;
+          });
+
+          this.emitInventoryStock(datas);
+          this.emitProductUpdate(productsUpdated);
           return { statusCode: 200, success: true };
         }),
       );
   }
 
-  private emitInventoryStock(data: RegisterProductInventoryStockData): void {
-    this.commandBus.publish(
-      new RegisterProductInventoryStockCommand(
-        data.branchId,
-        JSON.stringify(data),
-      ),
-    );
+  private emitInventoryStock(datas: RegisterProductInventoryStockData[]): void {
+    datas.forEach((data) => {
+      this.commandBus.publish(
+        new RegisterProductInventoryStockCommand(
+          data.branchId,
+          JSON.stringify(data),
+        ),
+      );
+    });
   }
 
-  private emitProductUpdate(data: RegisterProductData): void {
-    this.commandBus.publish(
-      new RegisterProductUpdated(data.branchId, JSON.stringify(data)),
-    );
+  private emitProductUpdate(datas: RegisterProductData[]): void {
+    datas.forEach((data) => {
+      this.commandBus.publish(
+        new RegisterProductUpdated(data.branchId, JSON.stringify(data)),
+      );
+    });
   }
 }

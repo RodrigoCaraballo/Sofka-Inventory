@@ -5,8 +5,6 @@ export class UserMongooseSeedService {
 
   seedData(): void {
     this.mongooseRepository.countDocuments().subscribe((count) => {
-      console.log(count);
-
       if (count === 0) {
         const superAdmin: RegisterUserData = {
           name: 'Super',

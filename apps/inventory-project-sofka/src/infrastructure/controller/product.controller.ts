@@ -36,7 +36,7 @@ export class CommandProductsController {
   @UseGuards(AdminGuard)
   @Post('/purchase')
   registerProductInventoryStock(
-    @Body() dto: RegisterProductInventoryStockDTO,
+    @Body() dto: RegisterProductInventoryStockDTO[],
   ): Observable<CommandResponse> {
     return this.registerProductInventoryStockUseCase.execute(dto);
   }
