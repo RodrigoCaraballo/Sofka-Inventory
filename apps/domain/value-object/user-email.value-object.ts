@@ -2,7 +2,7 @@ import {
   IErrorValueObject,
   ValueObjectBase,
   ValueObjectException,
-} from '@Sofka';
+} from '../lib';
 
 const REGEX = '^[^@]+@[^@]+.[a-zA-Z]{2,}$';
 

@@ -8,6 +8,7 @@ import {
 } from '@CommandApplication';
 import { AmqpConnection, RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
 import { Module, OnApplicationBootstrap } from '@nestjs/common';
+import { RegisterReturnSaleUseCase } from '../application/register-return-sale.use-case';
 import { CommandBranchController } from './controller/branch.controller';
 import { CommandProductsController } from './controller/product.controller';
 import { CommandUserController } from './controller/user.controller';
@@ -80,6 +81,14 @@ import { EventMongooseSeedService } from './seed';
         eventRepository: EventMongooseRepository,
         commandBus: CommandBus,
       ) => new RegisterResellerSaleUseCase(eventRepository, commandBus),
+      inject: [EventMongooseRepository, CommandBus],
+    },
+    {
+      provide: RegisterReturnSaleUseCase,
+      useFactory: (
+        eventRepository: EventMongooseRepository,
+        commandBus: CommandBus,
+      ) => new RegisterReturnSaleUseCase(eventRepository, commandBus),
       inject: [EventMongooseRepository, CommandBus],
     },
     {

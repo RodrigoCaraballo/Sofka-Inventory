@@ -2,7 +2,7 @@ import {
   IErrorValueObject,
   ValueObjectBase,
   ValueObjectException,
-} from '@Sofka';
+} from '../lib';
 
 const MIN_VALUE = 0;
 

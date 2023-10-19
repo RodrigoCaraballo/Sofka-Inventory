@@ -1,7 +1,7 @@
 import { IProduct, IProductRepository } from '@Domain';
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Observable, from } from 'rxjs';
+import { Observable, catchError, from } from 'rxjs';
 import { In, Repository } from 'typeorm';
 import { ProductTypeOrmEntity } from '../model';
 
@@ -13,11 +13,19 @@ export class ProductTypeOrmRepository implements IProductRepository {
   ) {}
 
   saveProduct(product: IProduct): Observable<IProduct> {
-    return from(this.productRepository.save(product));
+    return from(this.productRepository.save(product)).pipe(
+      catchError(() => {
+        throw new InternalServerErrorException('Something went wrong');
+      }),
+    );
   }
 
   saveProducts(products: IProduct[]): Observable<IProduct[]> {
-    return from(this.productRepository.save(products));
+    return from(this.productRepository.save(products)).pipe(
+      catchError(() => {
+        throw new InternalServerErrorException('Something went wrong');
+      }),
+    );
   }
 
   findProductById(id: string): Observable<IProduct> {
@@ -25,6 +33,10 @@ export class ProductTypeOrmRepository implements IProductRepository {
       this.productRepository.findOne({
         where: { id },
         relations: ['branch'],
+      }),
+    ).pipe(
+      catchError(() => {
+        throw new InternalServerErrorException('Something went wrong');
       }),
     );
   }
@@ -36,6 +48,10 @@ export class ProductTypeOrmRepository implements IProductRepository {
           id: In(productsId),
         },
         relations: ['branch'],
+      }),
+    ).pipe(
+      catchError(() => {
+        throw new InternalServerErrorException('Something went wrong');
       }),
     );
   }

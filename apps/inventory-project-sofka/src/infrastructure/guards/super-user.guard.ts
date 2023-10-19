@@ -1,24 +1,18 @@
-import { IEventRepository, JWTModel } from '@Domain';
+import { JWTModel } from '@Domain';
 import {
   CanActivate,
   ExecutionContext,
-  Inject,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
 import * as jwt from 'jsonwebtoken';
-import { Observable } from 'rxjs';
-import { EventMongooseRepository } from '../database';
+import { Observable, of } from 'rxjs';
 
 @Injectable()
 export class SuperAdminGuard implements CanActivate {
-  constructor(
-    @Inject(EventMongooseRepository) private eventRepository: IEventRepository,
-  ) {}
+  constructor() {}
 
-  canActivate(
-    context: ExecutionContext,
-  ): boolean | Promise<boolean> | Observable<boolean> {
+  canActivate(context: ExecutionContext): Observable<boolean> {
     const request = context.switchToHttp().getRequest();
 
     if (
@@ -34,13 +28,13 @@ export class SuperAdminGuard implements CanActivate {
         const decoded = jwt.decode(token) as JWTModel;
 
         if (decoded.userRole === 'super admin') {
-          return true;
+          return of(true);
         }
       } catch (error) {
         throw new UnauthorizedException('User not authorized');
       }
     }
 
-    return false;
+    return of(false);
   }
 }

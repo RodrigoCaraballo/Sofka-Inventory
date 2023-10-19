@@ -2,9 +2,9 @@ import {
   IErrorValueObject,
   ValueObjectBase,
   ValueObjectException,
-} from '@Sofka';
+} from '../lib';
 
-enum CATEGORY_ENUM {
+export enum CATEGORY_ENUM {
   Hand_Tools = 'hand tools',
   Power_Tools = 'power tools',
   Locksmithing = 'locksmithing',

@@ -1,5 +1,5 @@
-import { RegisterUserUseCase } from '@CommandApplication';
 import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import { RegisterUserUseCase } from '../../application';
 
 import { CommandResponse } from '@Domain';
 import { Observable } from 'rxjs';

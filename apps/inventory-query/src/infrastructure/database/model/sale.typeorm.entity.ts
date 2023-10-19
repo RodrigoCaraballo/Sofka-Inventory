@@ -33,4 +33,7 @@ export class SaleTypeOrmEntity {
 
   @Column()
   quantity: number;
+
+  @Column({ default: true })
+  activated: boolean;
 }

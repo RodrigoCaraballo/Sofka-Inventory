@@ -17,6 +17,7 @@ import {
 } from '@QueryInfrastructure';
 import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
 import { Module } from '@nestjs/common';
+import { RabbitRegisterReturnSaleUseCase } from '../application/rabbit-register-return-sale.use-case';
 import { ProductController } from './controller/product-controller';
 import { DatabaseModule } from './database/database.module';
 import {
@@ -99,6 +100,12 @@ import { AuthGuard } from './guard/authorization.guard';
       inject: [ProductTypeOrmRepository],
     },
     {
+      provide: RabbitRegisterReturnSaleUseCase,
+      useFactory: (saleRepository: SaleTypeOrmRepository) =>
+        new RabbitRegisterReturnSaleUseCase(saleRepository),
+      inject: [SaleTypeOrmRepository],
+    },
+    {
       provide: GetBranchUseCase,
       useFactory: (branchRepository: BranchTypeOrmRepository) =>
         new GetBranchUseCase(branchRepository),
@@ -130,6 +137,7 @@ import { AuthGuard } from './guard/authorization.guard';
         registerFinalCustomerSaleUseCase: RabbitRegisterFinalCustomerSaleUseCase,
         registerResellerSaleUseCase: RabbitRegisterResellerSaleUseCase,
         registerProductUpdateUseCase: RabbitRegisterProductUpdateUseCase,
+        registerReturnSaleUseCase: RabbitRegisterReturnSaleUseCase,
       ) =>
         new MessagingProductHandler(
           registerProductUseCase,
@@ -137,6 +145,7 @@ import { AuthGuard } from './guard/authorization.guard';
           registerFinalCustomerSaleUseCase,
           registerResellerSaleUseCase,
           registerProductUpdateUseCase,
+          registerReturnSaleUseCase,
         ),
       inject: [
         RabbitRegisterProductUseCase,
@@ -144,6 +153,7 @@ import { AuthGuard } from './guard/authorization.guard';
         RabbitRegisterFinalCustomerSaleUseCase,
         RabbitRegisterResellerSaleUseCase,
         RabbitRegisterProductUpdateUseCase,
+        RabbitRegisterReturnSaleUseCase,
       ],
     },
     {

@@ -1,8 +1,8 @@
-import { RegisterBranchUseCase } from '@CommandApplication';
 import { RegisterBranchDTO } from '@CommandInfrastructure';
 import { CommandResponse } from '@Domain';
 import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { Observable } from 'rxjs';
+import { RegisterBranchUseCase } from '../../application';
 import { AuthGuard } from '../guards/authorization.guard';
 import { SuperAdminGuard } from '../guards/super-user.guard';
 

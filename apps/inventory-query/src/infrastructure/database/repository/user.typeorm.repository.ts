@@ -1,6 +1,7 @@
 import { IUser, IUserRepository } from '@Domain';
+import { InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Observable, from } from 'rxjs';
+import { Observable, catchError, from } from 'rxjs';
 import { Repository } from 'typeorm';
 import { UserTypeOrmEntity } from '../model';
 
@@ -9,17 +10,26 @@ export class UserTypeOrmRepository implements IUserRepository {
     @InjectRepository(UserTypeOrmEntity)
     private readonly userRepository: Repository<UserTypeOrmEntity>,
   ) {}
-  countDocuments(): Observable<number> {
-    throw new Error('Method not implemented.');
-  }
 
   saveUser(user: IUser): Observable<IUser> {
-    return from(this.userRepository.save(user));
+    return from(this.userRepository.save(user)).pipe(
+      catchError(() => {
+        throw new InternalServerErrorException('Something went wrong');
+      }),
+    );
   }
   findUserById(id: string): Observable<IUser> {
-    return from(this.userRepository.findOne({ where: { id } }));
+    return from(this.userRepository.findOne({ where: { id } })).pipe(
+      catchError(() => {
+        throw new InternalServerErrorException('Something went wrong');
+      }),
+    );
   }
   findUserByEmail(email: string): Observable<IUser> {
-    return from(this.userRepository.findOne({ where: { email } }));
+    return from(this.userRepository.findOne({ where: { email } })).pipe(
+      catchError(() => {
+        throw new InternalServerErrorException('Something went wrong');
+      }),
+    );
   }
 }

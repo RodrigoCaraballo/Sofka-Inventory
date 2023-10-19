@@ -2,7 +2,7 @@ import {
   IErrorValueObject,
   ValueObjectBase,
   ValueObjectException,
-} from '@Sofka';
+} from '../lib';
 
 enum USEROLE {
   Super_Admin = 'super admin',

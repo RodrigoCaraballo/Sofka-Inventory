@@ -2,6 +2,7 @@ import {
   IProduct,
   RegisterProductData,
   RegisterProductInventoryStockData,
+  RegisterReturnSaleData,
   RegisterSalesData,
 } from '@Domain';
 import {
@@ -14,6 +15,7 @@ import {
 import { RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
 import { Injectable } from '@nestjs/common';
 import { Observable } from 'rxjs';
+import { RabbitRegisterReturnSaleUseCase } from '../../application/rabbit-register-return-sale.use-case';
 
 @Injectable()
 export class MessagingProductHandler {
@@ -23,6 +25,7 @@ export class MessagingProductHandler {
     private readonly registerFinalCustomerSaleUseCase: RabbitRegisterFinalCustomerSaleUseCase,
     private readonly registerResellerSaleUseCase: RabbitRegisterResellerSaleUseCase,
     private readonly registerProductUpdateUseCase: RabbitRegisterProductUpdateUseCase,
+    private readonly registerReturnSaleUseCase: RabbitRegisterReturnSaleUseCase,
   ) {}
 
   @RabbitSubscribe({
@@ -75,5 +78,15 @@ export class MessagingProductHandler {
   registerProductUpdate(dto: string): Observable<IProduct> {
     const product: RegisterProductData = JSON.parse(dto);
     return this.registerProductUpdateUseCase.execute(product);
+  }
+
+  @RabbitSubscribe({
+    exchange: 'BRANCH_EX_1',
+    routingKey: 'RETURN_SALE_REGISTERED',
+    queue: 'RETURN_SALE_REGISTERED',
+  })
+  registerReturnSale(dto: string): Observable<IProduct> {
+    const product: RegisterReturnSaleData = JSON.parse(dto);
+    return this.registerReturnSaleUseCase.execute(product);
   }
 }

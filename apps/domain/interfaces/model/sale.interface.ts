@@ -8,4 +8,5 @@ export interface ISale {
   productName: string;
   productPrice: number;
   quantity: number;
+  activated?: boolean;
 }

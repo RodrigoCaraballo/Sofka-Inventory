@@ -1,10 +1,4 @@
 import {
-  RegisterFinalCustomerSaleUseCase,
-  RegisterProductInventoryStockUseCase,
-  RegisterProductUseCase,
-  RegisterResellerSaleUseCase,
-} from '@CommandApplication';
-import {
   RegisterProductDTO,
   RegisterProductInventoryStockDTO,
   RegisterSaleDTO,
@@ -12,6 +6,14 @@ import {
 import { CommandResponse } from '@Domain';
 import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { Observable } from 'rxjs';
+import {
+  RegisterFinalCustomerSaleUseCase,
+  RegisterProductInventoryStockUseCase,
+  RegisterProductUseCase,
+  RegisterResellerSaleUseCase,
+} from '../../application';
+import { RegisterReturnSaleUseCase } from '../../application/register-return-sale.use-case';
+import { RegisterReturnSaleDTO } from '../dto/register-sale-return.dto';
 import { AdminGuard } from '../guards/admin.guard';
 import { AuthGuard } from '../guards/authorization.guard';
 
@@ -23,6 +25,7 @@ export class CommandProductsController {
     private readonly registerProductInventoryStockUseCase: RegisterProductInventoryStockUseCase,
     private readonly registerFinalCustomerSaleUseCase: RegisterFinalCustomerSaleUseCase,
     private readonly registerResellerSaleUseCase: RegisterResellerSaleUseCase,
+    private readonly registerReturnSaleUseCase: RegisterReturnSaleUseCase,
   ) {}
 
   @UseGuards(AdminGuard)
@@ -53,5 +56,12 @@ export class CommandProductsController {
     @Body() dto: RegisterSaleDTO,
   ): Observable<CommandResponse> {
     return this.registerResellerSaleUseCase.execute(dto);
+  }
+
+  @Post('/return-sale')
+  registerReturnSale(
+    @Body() dto: RegisterReturnSaleDTO,
+  ): Observable<CommandResponse> {
+    return this.registerReturnSaleUseCase.execute(dto);
   }
 }

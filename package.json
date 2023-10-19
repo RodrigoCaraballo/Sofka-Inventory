@@ -77,38 +77,43 @@
       "json",
       "ts"
     ],
-    "rootDir": "test",
-    "testRegex": ".*\\.spec\\.ts",
+    "rootDir": ".",
+    "testRegex": ".*\\.spec\\.ts$",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
     },
     "collectCoverageFrom": [
       "**/*.(t|j)s"
     ],
-    "coverageDirectory": "../coverage",
+    "coverageDirectory": "./coverage",
     "testEnvironment": "node",
-    "coveragePathIgnorePatterns": [
-      "/node_modules/",
-      "/test/",
-      "<rootDir>/main.ts",
-      "<rootDir>/shared/sofka",
-      "<rootDir>/app.module.ts",
-      "<rootDir>/subdomains/commodity/contexts/product/infrastructure",
-      "<rootDir>/subdomains/commodity/contexts/publication",
-      "/index.ts$",
-      "/enum.ts$",
-      "/module.ts$"
-    ],
-    "moduleNameMapper": {
-      "^@validations(.)$": "<rootDir>/shared/validations$1",
-      "^@ValueObjectBase(.)$": "<rootDir>/shared/domain/value-object$1",
-      "^@context/product/domain(.)$": "<rootDir>/subdomains/commodity/contexts/product/domain$1",
-      "^@context/product/applications(.)$": "<rootDir>/subdomains/commodity/contexts/product/application$1",
-      "^@context/product/infrastructure(.)$": "<rootDir>/subdomains/commodity/contexts/product/infrastructure$1",
-      "^@sofka(.)$": "<rootDir>/shared/sofka$1"
-    },
     "roots": [
       "<rootDir>/apps/"
-    ]
+    ],
+    "coveragePathIgnorePatterns": [
+      "./apps/domain/lib",
+      "./apps/authorization/src/infrastructure/seed",
+      "./apps/inventory-project-sofka/src/infrastructure/seed",
+      "/node_modules/",
+      "/test/",
+      ".module.ts",
+      ".mock.ts",
+      "main.ts",
+      "index.ts"
+    ],
+    "moduleNameMapper": {
+      "@Domain(.*)": "<rootDir>/apps/domain$1",
+      "@Sofka(.*)": "<rootDir>/apps/domain/lib$1",
+      "@CommandApplication(.*)": "<rootDir>/apps/inventory-project-sofka/src/application$1",
+      "@CommandInfrastructure(.*)": "<rootDir>/apps/inventory-project-sofka/src/infrastructure$1",
+      "@QueryApplication(.*)": "<rootDir>/apps/inventory-project-sofka/src/application$1",
+      "@QueryInfrastructure(.*)": "<rootDir>/apps/inventory-query/src/infrastructure$1",
+      "@Domain/(.*)": "<rootDir>/apps/domain/$1",
+      "@Sofka/(.*)": "<rootDir>/apps/domain/lib$1",
+      "@CommandApplication/(.*)": "<rootDir>/apps/inventory-project-sofka/src/application/$1",
+      "@CommandInfrastructure/(.*)": "<rootDir>/apps/inventory-project-sofka/src/infrastructure/$1",
+      "@QueryApplication/(.*)": "<rootDir>/apps/inventory-query/src/application/$1",
+      "@QueryInfrastructure/(.*)": "<rootDir>/apps/inventory-query/src/infrastructure/$1"
+    }
   }
 }

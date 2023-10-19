@@ -2,7 +2,7 @@ import {
   IErrorValueObject,
   ValueObjectBase,
   ValueObjectException,
-} from '@Sofka';
+} from '../lib';
 
 const MIN_EXTENSION = 3;
 const MAX_EXTENSION = 256;

@@ -4,10 +4,10 @@ import {
   RegisterBranchData,
   RegisterProductData,
 } from '@Domain';
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Observable, from } from 'rxjs';
+import { Observable, catchError, from } from 'rxjs';
 import { AuthData } from '../../../../../domain/interfaces/event-data/auth.data';
 import {
   EventMongoose,
@@ -26,6 +26,10 @@ export class EventMongooseRepository implements IEventRepository {
       this.eventRepository.findOne({
         'eventData.email': auth.email,
         'eventData.password': auth.password,
+      }),
+    ).pipe(
+      catchError(() => {
+        throw new InternalServerErrorException('Something went wrong');
       }),
     );
   }
@@ -66,6 +70,10 @@ export class EventMongooseRepository implements IEventRepository {
           },
         ])
         .exec(),
+    ).pipe(
+      catchError(() => {
+        throw new InternalServerErrorException('Something went wrong');
+      }),
     );
   }
 
@@ -83,6 +91,10 @@ export class EventMongooseRepository implements IEventRepository {
           'eventData.city': branch.city,
         })
         .exec(),
+    ).pipe(
+      catchError(() => {
+        throw new InternalServerErrorException('Something went wrong');
+      }),
     );
   }
 
@@ -91,6 +103,10 @@ export class EventMongooseRepository implements IEventRepository {
       this.eventRepository.findOne({
         eventType: 'USER_REGISTERED',
         'eventData.email': email,
+      }),
+    ).pipe(
+      catchError(() => {
+        throw new InternalServerErrorException('Something went wrong');
       }),
     );
   }
@@ -103,6 +119,10 @@ export class EventMongooseRepository implements IEventRepository {
         eventAggregateRootId: product.branchId,
         eventType: 'PRODUCT_REGISTERED',
         'eventData.name': product.name,
+      }),
+    ).pipe(
+      catchError(() => {
+        throw new InternalServerErrorException('Something went wrong');
       }),
     );
   }
@@ -118,10 +138,18 @@ export class EventMongooseRepository implements IEventRepository {
           'eventData.id': productId,
         })
         .sort({ eventPublishedAt: -1 }),
+    ).pipe(
+      catchError(() => {
+        throw new InternalServerErrorException('Something went wrong');
+      }),
     );
   }
 
   countDocuments(): Observable<number> {
-    return from(this.eventRepository.countDocuments().exec());
+    return from(this.eventRepository.countDocuments().exec()).pipe(
+      catchError(() => {
+        throw new InternalServerErrorException('Something went wrong');
+      }),
+    );
   }
 }

@@ -1,3 +1,5 @@
+import { BadRequestException } from '@nestjs/common';
+import { Observable, map } from 'rxjs';
 import {
   BranchEntity,
   CommandResponse,
@@ -7,9 +9,7 @@ import {
   IEventRepository,
   RegisterBranchCommand,
   RegisterBranchData,
-} from '@Domain';
-import { BadRequestException } from '@nestjs/common';
-import { Observable, map } from 'rxjs';
+} from '../../../domain';
 
 export class RegisterBranchUseCase {
   constructor(

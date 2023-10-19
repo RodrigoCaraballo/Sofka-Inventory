@@ -7,7 +7,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import * as jwt from 'jsonwebtoken';
-import { Observable, map } from 'rxjs';
+import { Observable, map, of } from 'rxjs';
 import { EventMongooseRepository } from '../database';
 
 @Injectable()
@@ -16,9 +16,7 @@ export class AuthGuard implements CanActivate {
     @Inject(EventMongooseRepository) private eventRepository: IEventRepository,
   ) {}
 
-  canActivate(
-    context: ExecutionContext,
-  ): boolean | Promise<boolean> | Observable<boolean> {
+  canActivate(context: ExecutionContext): Observable<boolean> {
     const request = context.switchToHttp().getRequest();
 
     if (
@@ -36,6 +34,7 @@ export class AuthGuard implements CanActivate {
         return this.eventRepository.existUser(decoded.userEmail).pipe(
           map((event: IEvent) => {
             const user = event.eventData as RegisterUserData;
+
             if (user.role) {
               return true;
             }
@@ -46,6 +45,6 @@ export class AuthGuard implements CanActivate {
       }
     }
 
-    return false;
+    return of(false);
   }
 }
