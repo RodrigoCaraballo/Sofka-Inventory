@@ -101,6 +101,25 @@ MYSQL_DB_HOST = mysql-inventory
 MYSQL_DB_DATABASE = db
 ```
 
+3. AND START ALL MICROSERVICE
+
+Command Service
+```cmd
+pnpm run start-command:dev
+```
+Query Service
+```cmd
+pnpm run start-query:dev
+```
+Socket Service
+```cmd
+pnpm run start-socket:dev
+```
+Auth Service
+```cmd
+pnpm run start-auth:dev
+```
+
 ## ENDPOINTS
 
 ### AUTH SERVICE ENDPOINT
